@@ -1,0 +1,14 @@
+<app-article-preview
+  *ngFor="let article of articles | async"
+  [article]="article">
+</app-article-preview>
+
+<div class="app-article-preview"
+  [hidden]="!loading">
+  Henter opslag...
+</div>
+
+<div class="app-article-preview"
+  [hidden]="!(!loading && (articles | async)?.length === 0)">
+  Der er endnu ikke lavet nogle opslag.
+</div>

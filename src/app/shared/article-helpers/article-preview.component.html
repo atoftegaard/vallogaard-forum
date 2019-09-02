@@ -1,0 +1,10 @@
+<div class="article-preview">
+  <app-article-meta [article]="article">
+  </app-article-meta>
+
+  <a [routerLink]="['/article', article.slug]" class="preview-link">
+    <h1>{{ article.title }}</h1>
+    <p>{{ article.description }}</p>
+    <span>Læs mere...</span>
+  </a>
+</div>

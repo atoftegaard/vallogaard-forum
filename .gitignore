@@ -59,3 +59,11 @@ typings/
 
 # next.js build output
 .next
+/.editorconfig
+
+/dist
+/src/environments
+
+*.lock
+*.cache13.47 02/09/2019
+/e2e

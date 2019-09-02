@@ -1,0 +1,62 @@
+<div class="auth-page">
+  <div class="container page">
+    <div class="row">
+
+      <div class="col-md-6 offset-md-3 col-xs-12" [hidden]="applied">
+        <h1 class="text-xs-center">{{ title }}</h1>
+        <p class="text-xs-center">
+          <a [routerLink]="['/login']" *ngIf="authType == 'register'">Hvis du allerede har en bruger, klik her</a>
+          <a [routerLink]="['/register']" *ngIf="authType == 'login'">For at anmode om en bruger, klik her</a>
+        </p>
+        <app-list-errors [errors]="errors"></app-list-errors>
+        <form [formGroup]="authForm" (ngSubmit)="submitForm()">
+          <fieldset [disabled]="isSubmitting">
+            <fieldset class="form-group">
+              <input
+                formControlName="email"
+                placeholder="Angiv din emailadresse her"
+                class="form-control form-control-lg"
+                type="text" />
+            </fieldset>
+            <fieldset class="form-group">
+              <input
+                formControlName="username"
+                placeholder="Angiv dit fulde navn her"
+                class="form-control form-control-lg"
+                type="text"
+                *ngIf="authType == 'register'" />
+            </fieldset>
+            <fieldset class="form-group">
+              <input
+                formControlName="address"
+                placeholder="Angiv din adresse her"
+                class="form-control form-control-lg"
+                type="text"
+                *ngIf="authType == 'register'" />
+            </fieldset>
+            <fieldset class="form-group">
+              <input
+                formControlName="password"
+                placeholder="Angiv dit kodeord her"
+                class="form-control form-control-lg"
+                type="password"
+                *ngIf="authType != 'register'" />
+            </fieldset>
+            <button class="btn btn-lg btn-primary pull-xs-right" [disabled]="!authForm.valid || isSubmitting" type="submit">
+              {{ title }}
+            </button>
+          </fieldset>
+        </form>
+      </div>
+
+      <div class="col-md-6 offset-md-3 col-xs-12" [hidden]="!applied">
+        <h1 class="text-xs-center">Anmodningen blev sendt</h1>
+        <p class="text-xs-center">
+          Da dette er et lukket forum, skal alle anmodninger godkendes manuelt, inden log ind er muligt. Du vil modtage en e-mail med yderligere informationer, såfremt din anmodning godkendes.
+        </p>
+        
+      </div>
+
+    </div>
+  </div>
+</div>

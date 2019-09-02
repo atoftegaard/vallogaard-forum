@@ -1,0 +1,17 @@
+<div class="home-page">
+
+  <div class="banner" *appShowAuthed="false">
+    <div class="container">
+      <!-- <h1 class="logo-font">Valløgaard</h1>
+      <p>Et privat forum for Valløgaard ejerforening</p> -->
+    </div>
+  </div>
+
+  <div class="container page">
+    <div class="row">
+      <div class="col-md-12">
+        <app-article-list [limit]="10" [config]="listConfig"></app-article-list>
+      </div>
+    </div>
+  </div>
+</div>
