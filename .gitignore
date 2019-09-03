@@ -67,3 +67,4 @@ typings/
 *.lock
 *.cache13.47 02/09/2019
 /e2e
+/package-lock.json

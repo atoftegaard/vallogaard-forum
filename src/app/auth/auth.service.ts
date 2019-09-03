@@ -20,11 +20,7 @@ export  class  AuthService {
     this.afAuth.authState.subscribe(user => {
       if (user) {
         this.user = user;
-        const collection = this.db.collection<Profile>('profiles', ref => ref.where('uid', '==', user.uid));
-        collection.valueChanges().pipe(first(), map(x => x[0])).subscribe(u => {
-          this.profile = u;
-        });
-
+        this.updateProfile();
         localStorage.setItem('user', JSON.stringify(this.user));
       } else {
         localStorage.setItem('user', null);
@@ -32,12 +28,19 @@ export  class  AuthService {
     });
   }
 
-  async login(email:  string, password:  string) {
+  updateProfile() {
+    const collection = this.db.collection<Profile>('profiles', ref => ref.where('uid', '==', this.user.uid));
+    collection.valueChanges().pipe(first(), map(x => x[0])).subscribe(u => {
+      this.profile = u;
+    });
+  }
+
+  async login(email: string, password: string) {
     try {
-      await  this.afAuth.auth.signInWithEmailAndPassword(email, password)
-       this.router.navigate(['/']);
+      await this.afAuth.auth.signInWithEmailAndPassword(email, password)
+      this.router.navigate(['/']);
     } catch (e) {
-       alert("Error!"  +  e.message);
+      alert("Error!"  +  e.message);
     }
   }
 
@@ -50,5 +53,10 @@ export  class  AuthService {
   get isLoggedIn(): boolean {
     const user = JSON.parse(localStorage.getItem('user'));
     return user !==  null;
+  }
+
+  get uid(): string {
+    const user = JSON.parse(localStorage.getItem('user'));
+    return user.uid;
   }
 }

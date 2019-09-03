@@ -1,66 +1,91 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
+import { Profile } from '../core';
+import { TypedRoute } from 'ngx-typed-router';
+import { AngularFirestore } from '@angular/fire/firestore';
+import { SettingsRouteData } from './settings-route-data';
+import { SettingsRoutePath } from './settings-route-path';
+import { AuthService } from '../auth/auth.service';
+import { first, map } from 'rxjs/operators';
+import { ImageService } from '../core/services/settings-file-upload.service';
 
-import { Profile, UserService } from '../core';
+class ImageSnippet {
+  constructor(public src: string, public file: File) {}
+}
 
 @Component({
   selector: 'app-settings-page',
-  templateUrl: './settings.component.html'
+  templateUrl: './settings.component.html',
+  styles: ['.form-control-inline { width: auto; display: inline; }']
 })
 export class SettingsComponent implements OnInit {
-  user: Profile = {} as Profile;
+  profile: Profile;
   settingsForm: FormGroup;
   errors: Object = {};
   isSubmitting = false;
+  selectedFile: ImageSnippet;
 
-  constructor(
-    private router: Router,
-    private userService: UserService,
-    private fb: FormBuilder
+  constructor(@Inject(ActivatedRoute) private route: TypedRoute<SettingsRouteData, SettingsRoutePath>,
+    private db: AngularFirestore,
+    private authService: AuthService,
+    private fb: FormBuilder,
+    private imageService: ImageService
   ) {
-    // create form group using the form builder
     this.settingsForm = this.fb.group({
       image: '',
       name: '',
       email: '',
-      password: ''
+      password: '',
+      notifyAboutNewArticles: '',
+      notifyAboutNewComments: ''
     });
-    // Optional: subscribe to changes on the form
-    // this.settingsForm.valueChanges.subscribe(values => this.updateUser(values));
   }
 
   ngOnInit() {
-    // Make a fresh copy of the current user's object to place in editable form fields
-    Object.assign(this.user, this.userService.getCurrentUser());
-    // Fill the form
-    this.settingsForm.patchValue(this.user);
-  }
-
-  logout() {
-    this.userService.purgeAuth();
-    this.router.navigateByUrl('/');
+    this.profile = this.route.snapshot.data.profile;
+    this.settingsForm.patchValue(this.profile);
   }
 
   submitForm() {
     this.isSubmitting = true;
-
-    // update the model
     this.updateUser(this.settingsForm.value);
 
-    this.userService
-    .update(this.user)
-    .subscribe(
-      updatedUser => this.router.navigateByUrl('/profile/' + updatedUser.uid),
-      err => {
-        this.errors = err;
+    const collection = this.db.collection<Profile>('profiles', ref => ref.where('uid', '==', this.authService.user.uid));
+    collection.snapshotChanges().pipe(first(), map(x => x[0])).subscribe((profile) => {
+      const profileId = profile.payload.doc.id;
+      let profileRef = this.db.collection('profiles').doc(profileId);
+      profileRef.set(this.profile, { merge: true }).then(() => {
         this.isSubmitting = false;
-      }
-    );
+      })
+      .catch(function(error) {
+        console.error("Error writing document: ", error);
+        this.isSubmitting = false;
+      });
+    });
   }
 
-  updateUser(values: Object) {
-    Object.assign(this.user, values);
+  updateUser(values: any) {
+    this.profile.name = values.name;
+    this.profile.email = values.email;
+    this.profile.notifyAboutNewArticles = values.notifyAboutNewArticles;
+    this.profile.notifyAboutNewComments = values.notifyAboutNewComments;
+  }
+
+  processFile(imageInput: any) {
+    const file: File = imageInput.files[0];
+    const reader = new FileReader();
+
+    reader.addEventListener('load', (event: any) => {
+      this.selectedFile = new ImageSnippet(event.target.result, file);
+      this.imageService.uploadImage(this.selectedFile.file).subscribe((url) => {
+        this.profile.image = url;
+        this.authService.updateProfile();
+       }, (err) => { console.error(err); })
+      //todo, oprydning hvis billeder ændres.
+    });
+
+    reader.readAsDataURL(file);
   }
 
 }

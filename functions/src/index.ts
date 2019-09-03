@@ -1,5 +1,6 @@
 import * as functions from 'firebase-functions';
 import { environment } from '../../src/environments/environment';
+import { Profile } from '../../src/app/core/models/profile.model';
 
 const admin = require('firebase-admin');
 const nodemailer = require('nodemailer');
@@ -35,6 +36,8 @@ exports.applyForUser = functions.https.onRequest((req: any, res: any) => {
             'email': email,
             'address': address,
             'image': 'https://api.adorable.io/avatars/40/' + email + '.png',
+            'notifyAboutNewArticles': true,
+            'notifyAboutNewComments': true,
             'uid': 'pending'
           })
           .then(() => {
@@ -59,5 +62,52 @@ exports.applyForUser = functions.https.onRequest((req: any, res: any) => {
 			console.log('collection error', error);
             return res.status(500).send(error.toString());
           });
+    });    
+});
+
+exports.notifyNewArticle = functions.https.onRequest((req: any, res: any) => {
+    return cors(req, res, () => {
+        
+        res.set('Access-Control-Allow-Origin', "*");
+        res.set('Access-Control-Allow-Methods', 'GET, POST');
+
+        if(req.method !== 'POST'){
+            res.status(400).send('Please send a POST request');
+            return;
+        }
+ 
+        const articlename = req.body.data.articlename;
+        const articleurl = req.body.data.articleurl;
+        const authorname = req.body.data.authorname;
+        const authoruid = req.body.data.authoruid;
+       
+        console.log('notifyNewArticle called with body', JSON.stringify(req.body));
+        
+        admin.firestore().collection('profiles', (ref: any) => ref.where('notifyAboutNewArticles', '==', true)).get()
+        .then((snap: any) => {
+            if (snap.empty) {
+                return;
+            }
+            snap.forEach((doc: any) => {
+                let profile = doc.data() as Profile;
+                if (profile.uid === authoruid) {
+                    return;
+                }
+                const mailOptions = {
+                    from: 'Valløgaard Forum <andreas@toftegaard.it>',
+                    to: profile.email,
+                    subject: 'Nyt opslag fra ' +  authorname,
+                    html: `<p>Hej ${profile.name}</p><p>${authorname} har lavet <a href="${articleurl}">opslaget ${articlename}, klik her for at se det.</a></p>`
+                };
+        
+                return transporter.sendMail(mailOptions, (error: any) => {
+                    if(error){
+                        console.log('sendMail error', error.toString());
+                        return res.status(500).send(error.toString());
+                    }
+                    return res.send('OK');
+                });
+            });
+        });
     });    
 });

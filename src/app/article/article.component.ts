@@ -19,6 +19,13 @@ import * as uuid from 'uuid';
   templateUrl: './article.component.html'
 })
 export class ArticleComponent implements OnInit {
+
+  constructor(@Inject(ActivatedRoute) private route: TypedRoute<ArticleRouteData,
+   ArticleRoutePath>,
+    private db: AngularFirestore,
+    private authService: AuthService
+  ) { }
+  
   commentContent: string;
   article: Article;
   comments: Observable<Comment[]>
@@ -60,12 +67,6 @@ export class ArticleComponent implements OnInit {
       }
     }
   };
-
-  constructor(@Inject(ActivatedRoute) private route: TypedRoute<ArticleRouteData,
-   ArticleRoutePath>,
-    private db: AngularFirestore,
-    private authService: AuthService
-  ) { }
 
   ngOnInit() {
     this.article = this.route.snapshot.data.article;

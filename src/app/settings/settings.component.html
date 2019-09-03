@@ -11,10 +11,25 @@
           <fieldset [disabled]="isSubmitting">
 
             <fieldset class="form-group">
-              <input class="form-control"
-                type="text"
-                placeholder="Profilbillede"
-                formControlName="image" />
+              <img [src]="profile.image" />
+              <div *ngIf="selectedFile" class="img-preview-container">
+                <div class="img-preview{{selectedFile.status === 'fail' ? '-error' : ''}}"
+                      [ngStyle]="{'background-image': 'url('+ selectedFile.src + ')'}">
+                </div>
+              
+                <div *ngIf="selectedFile.pending" class="img-loading-overlay">
+                  <div class="img-spinning-circle"></div>
+                </div>
+              
+                <div *ngIf="selectedFile.status === 'ok'" class="alert alert-success"> Image Uploaded Succesfuly!</div>
+                <div *ngIf="selectedFile.status === 'fail'" class="alert alert-danger"> Image Upload Failed!</div>
+              </div>
+
+              <span>Vælg et profilbillede</span>
+              <input #imageInput class="form-control form-control-lg"
+                type="file"
+                accept="image/*"
+                (change)="processFile(imageInput)">
             </fieldset>
 
             <fieldset class="form-group">
@@ -32,15 +47,8 @@
             </fieldset>
 
             <fieldset class="form-group">
-              <input class="form-control form-control-lg"
-                type="password"
-                placeholder="Nyt kodeord"
-                formControlName="password" />
-            </fieldset>
-
-            <fieldset class="form-group">
               <label>
-              <input class="form-control form-control-lg"
+              <input class="form-control form-control-lg form-control-inline"
                 type="checkbox"
                 formControlName="notifyAboutNewArticles" />
                 Send e-mailnotifikation når et nyt opslag oprettes
@@ -49,9 +57,9 @@
 
             <fieldset class="form-group">
               <label>
-              <input class="form-control form-control-lg"
+              <input class="form-control form-control-lg form-control-inline"
                 type="checkbox"
-                formControlName="notifyAboutNewArticles" />
+                formControlName="notifyAboutNewComments" />
                 Send e-mailnotifikation når et opslag kommenteres
               </label>
             </fieldset>

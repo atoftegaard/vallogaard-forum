@@ -5,6 +5,7 @@ import { Article } from '../core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { AuthService } from '../auth/auth.service';
 import { first, map } from 'rxjs/operators';
+import { AngularFireFunctions } from '@angular/fire/functions';
 let slug = require('slug');
 
 @Component({
@@ -30,7 +31,8 @@ export class EditorComponent implements OnInit {
     private router: Router,
     private db: AngularFirestore,
     private fb: FormBuilder,
-    private authService: AuthService
+    private authService: AuthService,
+    private fns: AngularFireFunctions
   ) {
     // use the FormBuilder to create a form group
     this.articleForm = this.fb.group({
@@ -70,8 +72,14 @@ export class EditorComponent implements OnInit {
         // post the changes
         let articleRef = this.db.collection('articles').doc(this.article.slug);
 
-        articleRef.set(this.article, { merge: true }).then(function() {
+        articleRef.set(this.article, { merge: true }).then(() => {
           that.router.navigateByUrl('/article/' + that.article.slug),
+          this.fns.httpsCallable('notifyNewArticle')({
+            "articlename": this.article.title,
+            "articleurl": `${window.location.origin}/article/${this.article.slug}`,
+            "authorname": this.article.author.name,
+            "authoruid": this.article.author.uid
+          });
           that.isSubmitting = false;
         })
         .catch(function(error) {

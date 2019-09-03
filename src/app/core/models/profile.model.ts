@@ -4,4 +4,6 @@ export interface Profile {
   address: string;
   email: string;
   image: string;
+  notifyAboutNewArticles: boolean;
+  notifyAboutNewComments: boolean;
 }
