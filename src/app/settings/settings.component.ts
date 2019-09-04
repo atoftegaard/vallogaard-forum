@@ -17,7 +17,7 @@ class ImageSnippet {
 @Component({
   selector: 'app-settings-page',
   templateUrl: './settings.component.html',
-  styles: ['.form-control-inline { width: auto; display: inline; }']
+  styles: ['.form-control-inline { width: auto; display: inline; } .img-profile { max-width: 18em; max-height: 18em; }']
 })
 export class SettingsComponent implements OnInit {
   profile: Profile;

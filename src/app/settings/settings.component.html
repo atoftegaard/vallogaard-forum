@@ -11,28 +11,29 @@
           <fieldset [disabled]="isSubmitting">
 
             <fieldset class="form-group">
-              <img [src]="profile.image" />
+              <p>
+                <img [src]="profile.image" class="img-profile" />
+              </p>
               <div *ngIf="selectedFile" class="img-preview-container">
                 <div class="img-preview{{selectedFile.status === 'fail' ? '-error' : ''}}"
-                      [ngStyle]="{'background-image': 'url('+ selectedFile.src + ')'}">
+                  [ngStyle]="{'background-image': 'url('+ selectedFile.src + ')'}">
                 </div>
               
                 <div *ngIf="selectedFile.pending" class="img-loading-overlay">
                   <div class="img-spinning-circle"></div>
                 </div>
-              
-                <div *ngIf="selectedFile.status === 'ok'" class="alert alert-success"> Image Uploaded Succesfuly!</div>
-                <div *ngIf="selectedFile.status === 'fail'" class="alert alert-danger"> Image Upload Failed!</div>
               </div>
-
-              <span>Vælg et profilbillede</span>
-              <input #imageInput class="form-control form-control-lg"
-                type="file"
-                accept="image/*"
-                (change)="processFile(imageInput)">
+              <p>
+                <span>Vælg et profilbillede</span>
+                <input #imageInput class="form-control form-control-lg"
+                  type="file"
+                  accept="image/*"
+                  (change)="processFile(imageInput)">
+              </p>
             </fieldset>
 
             <fieldset class="form-group">
+              <span>Dit fulde navn</span>
               <input class="form-control form-control-lg"
                 type="text"
                 placeholder="Dit fulde navn"
@@ -40,6 +41,7 @@
             </fieldset>
 
             <fieldset class="form-group">
+              <span>Din e-mail adresse</span>
               <input class="form-control form-control-lg"
                 type="email"
                 placeholder="Din E-mail adresse"
