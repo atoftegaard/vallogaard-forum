@@ -58,7 +58,8 @@
           <form class="card comment-form" (ngSubmit)="addComment()">
             <fieldset [disabled]="isSubmitting">
               <div class="card-block">
-                <div [froalaEditor]='commentOptions' [(froalaModel)]="commentContent"></div>
+                <p-editor [(ngModel)]="commentContent" [style]="{'height':'320px'}" name="comment"></p-editor>
+                <!--<div [froalaEditor]='commentOptions' [(froalaModel)]="commentContent"></div>-->
               </div>
               <div class="card-footer">
                 <!-- <img [src]="currentUser.image" class="comment-author-img" /> -->

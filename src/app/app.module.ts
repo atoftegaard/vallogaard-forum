@@ -10,9 +10,9 @@ import { HomeModule } from './home/home.module';
 import { FooterComponent, HeaderComponent, SharedModule } from './shared';
 import { AppRoutingModule } from './app-routing.module';
 import { CoreModule } from './core/core.module';
-import 'froala-editor/js/plugins.pkgd.min.js';
 import { NgcCookieConsentModule, NgcCookieConsentConfig } from 'ngx-cookieconsent';
 import { AngularFireFunctionsModule, FunctionsRegionToken } from '@angular/fire/functions';
+import { EditorModule } from 'primeng/editor';
 
 const cookieConfig: NgcCookieConsentConfig = {
   cookie: {
@@ -34,6 +34,7 @@ const cookieConfig: NgcCookieConsentConfig = {
   declarations: [AppComponent, FooterComponent, HeaderComponent],
   imports: [
     BrowserModule,
+    EditorModule,
     CoreModule,
     SharedModule,
     HomeModule,

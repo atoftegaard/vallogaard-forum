@@ -35,6 +35,8 @@ export class ArticleComponent implements OnInit {
   isSubmitting = false;
   isDeleting = false;
   images: File[] = [];
+  commentOptions: string;
+  /*
   commentOptions: Object = {
     height: 300,
     charCounterCount: false,
@@ -66,7 +68,7 @@ export class ArticleComponent implements OnInit {
         storageRef.child(imgId).delete();
       }
     }
-  };
+  };*/
 
   ngOnInit() {
     this.article = this.route.snapshot.data.article;

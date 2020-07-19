@@ -19,12 +19,12 @@ export class EditorComponent implements OnInit {
   tagField = new FormControl();
   error: string;
   isSubmitting = false;
-  commentOptions: Object = {
+  /*commentOptions: Object = {
     charCounterCount: false,
     attribution:false,
     placeholderText: "Skriv opslag her",
     toolbarButtons: ['bold', 'italic', 'underline', 'strikeThrough', 'subscript', 'superscript', 'insertTable', '|', 'insertLink', 'insertImage', '|', 'undo', 'redo']
-  };
+  };*/
 
   constructor(
     private route: ActivatedRoute,
@@ -59,7 +59,6 @@ export class EditorComponent implements OnInit {
     this.articleForm.value.createdAt = new Date();
     this.updateArticle(this.articleForm.value);
     this.article.author = this.authService.profile;
-    this.article.body = this.articleContent;
 
     let that = this;
     const collection = this.db.collection<Article>('articles', ref => ref.where('slug', '==', this.article.slug));

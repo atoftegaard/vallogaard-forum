@@ -1,19 +1,17 @@
 import { ModuleWithProviders, NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-
 import { ArticleComponent } from './article.component';
 import { ArticleCommentComponent } from './article-comment.component';
 import { MarkdownPipe } from './markdown.pipe';
 import { SharedModule } from '../shared';
 import { ArticleRoutingModule } from './article-routing.module';
-import { FroalaEditorModule, FroalaViewModule } from 'angular-froala-wysiwyg';
+import { EditorModule } from 'primeng/editor';
 
 @NgModule({
   imports: [
     SharedModule,
     ArticleRoutingModule,
-    FroalaEditorModule.forRoot(),
-    FroalaViewModule.forRoot()
+    EditorModule
   ],
   declarations: [
     ArticleComponent,
@@ -21,8 +19,6 @@ import { FroalaEditorModule, FroalaViewModule } from 'angular-froala-wysiwyg';
     MarkdownPipe
   ],
   exports: [
-    FroalaEditorModule,
-    FroalaViewModule
   ]
 })
 export class ArticleModule {}

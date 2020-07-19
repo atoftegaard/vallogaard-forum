@@ -20,7 +20,8 @@
             </fieldset>
 
             <fieldset class="form-group">
-              <div [froalaEditor]='commentOptions' [(froalaModel)]="articleContent"></div>
+              <p-editor [style]="{'height':'320px'}" formControlName="body"></p-editor>
+              <!--<div [froalaEditor]='commentOptions' [(froalaModel)]="articleContent"></div>-->
             </fieldset>
 
             <button class="btn btn-lg pull-xs-right btn-primary" type="button" (click)="submitForm()">
