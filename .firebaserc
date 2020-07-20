@@ -1,5 +1,15 @@
 {
   "projects": {
-    "default": "vallogaard-2019"
+    "default": "vallogaard-2019",
+    "ang2-forum": "vallogaard-2019"
+  },
+  "targets": {
+    "vallogaard-2019": {
+      "hosting": {
+        "ang2-forum": [
+          "vallogaard-2019"
+        ]
+      }
+    }
   }
 }

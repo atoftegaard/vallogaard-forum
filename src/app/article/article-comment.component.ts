@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
-
+import { DatePipe } from '@angular/common';
 import { Comment, UserService, Profile } from '../core';
 
 @Component({
@@ -8,7 +8,8 @@ import { Comment, UserService, Profile } from '../core';
 })
 export class ArticleCommentComponent implements OnInit {
   constructor(
-    private userService: UserService
+    private userService: UserService,
+    private datePipe: DatePipe
   ) {}
 
   @Input() comment: Comment;
@@ -29,4 +30,7 @@ export class ArticleCommentComponent implements OnInit {
     this.deleteComment.emit(true);
   }
 
+  toLongDate(date: any) {
+    return this.datePipe.transform(date.toDate(), 'longDate');
+  }
 }

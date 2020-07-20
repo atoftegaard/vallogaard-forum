@@ -1,27 +1,17 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-
-import { ApiService } from './api.service';
+import { AngularFirestore } from '@angular/fire/firestore';
 import { Profile } from '../models';
-import { map } from 'rxjs/operators';
+import { map, first } from 'rxjs/operators';
 
 @Injectable()
 export class ProfilesService {
   constructor (
-    private apiService: ApiService
+    private db: AngularFirestore,
   ) {}
 
   get(username: string): Observable<Profile> {
-    return this.apiService.get('/profiles/' + username)
-      .pipe(map((data: {profile: Profile}) => data.profile));
+    const collection = this.db.collection<Profile>('profiles', ref => ref.where('uid', '==', username));
+    return collection.valueChanges().pipe(first(), map(x => x[0]));
   }
-
-  follow(username: string): Observable<Profile> {
-    return this.apiService.post('/profiles/' + username + '/follow');
-  }
-
-  unfollow(username: string): Observable<Profile> {
-    return this.apiService.delete('/profiles/' + username + '/follow');
-  }
-
 }

@@ -9,7 +9,7 @@
       {{ article.author.name }}
     </a>
     <span class="date">
-      {{ article.createdAt.toDate() | date: 'longDate' }}
+      {{ toLongDate(article.createdAt) }}
     </span>
   </div>
 

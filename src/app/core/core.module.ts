@@ -11,7 +11,6 @@ import {
   ImageService,
   JwtService,
   ProfilesService,
-  TagsService,
   UserService
 } from './services';
 
@@ -28,7 +27,6 @@ import {
     ImageService,
     JwtService,
     ProfilesService,
-    TagsService,
     UserService
   ],
   declarations: []

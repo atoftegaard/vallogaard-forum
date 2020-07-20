@@ -25,43 +25,58 @@ exports.applyForUser = functions.https.onRequest((req: any, res: any) => {
             res.status(400).send('Please send a POST request');
             return;
         }
- 
+
+		console.log('applyForUser called with body', JSON.stringify(req.body));
+
         const name = req.body.data.name;
         const email = req.body.data.email;
         const address = req.body.data.address;
-		console.log('applyForUser called with body', JSON.stringify(req.body));
+        const image = 'https://api.adorable.io/avatars/40/' + email + '.png';
 
-        admin.firestore().collection('profiles').add({
-            'name': name,
-            'email': email,
-            'address': address,
-            'image': 'https://api.adorable.io/avatars/40/' + email + '.png',
-            'notifyAboutNewArticles': true,
-            'notifyAboutNewComments': true,
-            'uid': 'pending'
-          })
-          .then(() => {
-			console.log('profile added');
-            const dest = req.body.data.destination;
-            const mailOptions = {
-                from: 'Valløgaard Forum <andreas@toftegaard.it>',
-                to: dest,
-                subject: 'Anmodning om brugeroprettelse',
-                html: `Der er kommet en anmodning om brugeroprettelse fra "` + name + `" - check <a href="https://console.firebase.google.com/project/vallogaard-2019/database/firestore/data~2Fprofiles">https://console.firebase.google.com/project/vallogaard-2019/database/firestore/data~2Fprofiles</a>`
-            };
-    
-            return transporter.sendMail(mailOptions, (error: any) => {
-                if(error){
-					console.log('sendMail error', error.toString());
-                    return res.status(500).send(error.toString());
-                }
-                return res.send('OK');
-            });
-          })
-          .catch((error: any) => {
-			console.log('collection error', error);
-            return res.status(500).send(error.toString());
-          });
+        admin.auth().createUser({
+            email: email,
+            emailVerified: false,
+            password: 'testtest',
+            displayName: name,
+            photoURL: image,
+            disabled: false
+          }).then((userRecord: any) => {
+            // See the UserRecord reference doc for the contents of userRecord.
+            console.log('Successfully created new user:', userRecord.uid);
+            admin.firestore().collection('profiles').doc(userRecord.uid).set({
+                'name': name,
+                'email': email,
+                'address': address,
+                'image': image,
+                'notifyAboutNewArticles': true,
+                'notifyAboutNewComments': true,
+                'uid': 'pending'
+              })
+              .then(() => {
+                console.log('profile added');
+                const dest = req.body.data.destination;
+                const mailOptions = {
+                    from: 'Valløgaard Forum <andreas@toftegaard.it>',
+                    to: dest,
+                    subject: 'Anmodning om brugeroprettelse',
+                    html: `Der er kommet en anmodning om brugeroprettelse fra "` + name + `" - check <a href="https://console.firebase.google.com/project/vallogaard-2019/database/firestore/data~2Fprofiles">https://console.firebase.google.com/project/vallogaard-2019/database/firestore/data~2Fprofiles</a>`
+                };
+        
+                return transporter.sendMail(mailOptions, (error: any) => {
+                    if(error){
+                        console.log('sendMail error', error.toString());
+                        return res.status(500).send(error.toString());
+                    }
+                    return res.send('OK');
+                });
+              })
+              .catch((error: any) => {
+                console.log('collection error', error);
+                return res.status(500).send(error.toString());
+              });
+        }).catch((error: any) => {
+            console.log('Error creating new user:', error);
+        });
     });    
 });
 
