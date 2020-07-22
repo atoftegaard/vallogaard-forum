@@ -11,7 +11,7 @@ import { EditorModule } from 'primeng/editor';
   imports: [
     SharedModule,
     ArticleRoutingModule,
-    EditorModule
+    EditorModule,
   ],
   declarations: [
     ArticleComponent,
@@ -21,4 +21,4 @@ import { EditorModule } from 'primeng/editor';
   exports: [
   ]
 })
-export class ArticleModule {}
+export class ArticleModule { }

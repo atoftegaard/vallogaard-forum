@@ -1,7 +1,7 @@
 import { AngularFireModule } from '@angular/fire';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { environment } from '../environments/environment';
-import { NgModule } from '@angular/core';
+import { NgModule, LOCALE_ID } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AngularFireAuthModule } from "@angular/fire/auth";
 import { AppComponent } from './app.component';
@@ -13,6 +13,10 @@ import { CoreModule } from './core/core.module';
 import { NgcCookieConsentModule, NgcCookieConsentConfig } from 'ngx-cookieconsent';
 import { AngularFireFunctionsModule, FunctionsRegionToken } from '@angular/fire/functions';
 import { EditorModule } from 'primeng/editor';
+import { registerLocaleData } from '@angular/common';
+import localeDa from '@angular/common/locales/da';
+
+registerLocaleData(localeDa);
 
 const cookieConfig: NgcCookieConsentConfig = {
   cookie: {
@@ -47,7 +51,8 @@ const cookieConfig: NgcCookieConsentConfig = {
     NgcCookieConsentModule.forRoot(cookieConfig)
   ],
   providers: [
-    { provide: FunctionsRegionToken, useValue: 'us-central1' }
+    { provide: FunctionsRegionToken, useValue: 'us-central1' },
+    { provide: LOCALE_ID, useValue: 'da' }
   ],
   bootstrap: [AppComponent]
 })

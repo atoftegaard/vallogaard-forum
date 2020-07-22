@@ -39,7 +39,7 @@ exports.applyForUser = functions.https.onRequest((req: any, res: any) => {
             password: 'testtest',
             displayName: name,
             photoURL: image,
-            disabled: false
+            disabled: true
           }).then((userRecord: any) => {
             // See the UserRecord reference doc for the contents of userRecord.
             console.log('Successfully created new user:', userRecord.uid);
@@ -50,13 +50,13 @@ exports.applyForUser = functions.https.onRequest((req: any, res: any) => {
                 'image': image,
                 'notifyAboutNewArticles': true,
                 'notifyAboutNewComments': true,
-                'uid': 'pending'
+                'uid': userRecord.uid
               })
               .then(() => {
                 console.log('profile added');
                 const dest = req.body.data.destination;
                 const mailOptions = {
-                    from: 'Valløgaard Forum <andreas@toftegaard.it>',
+                    from: 'Valløgård Forum <andreas@toftegaard.it>',
                     to: dest,
                     subject: 'Anmodning om brugeroprettelse',
                     html: `Der er kommet en anmodning om brugeroprettelse fra "` + name + `" - check <a href="https://console.firebase.google.com/project/vallogaard-2019/database/firestore/data~2Fprofiles">https://console.firebase.google.com/project/vallogaard-2019/database/firestore/data~2Fprofiles</a>`
@@ -109,7 +109,7 @@ exports.notifyNewArticle = functions.https.onRequest((req: any, res: any) => {
                     return;
                 }
                 const mailOptions = {
-                    from: 'Valløgaard Forum <andreas@toftegaard.it>',
+                    from: 'Valløgård Forum <andreas@toftegaard.it>',
                     to: profile.email,
                     subject: 'Nyt opslag fra ' +  authorname,
                     html: `<p>Hej ${profile.name}</p><p>${authorname} har lavet <a href="${articleurl}">opslaget ${articlename}, klik her for at se det.</a></p>`

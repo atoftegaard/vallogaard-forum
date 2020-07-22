@@ -2,12 +2,8 @@
   <div class="container page">
     <div class="row">
 
-      <div class="col-md-6 offset-md-3 col-xs-12" [hidden]="applied">
+      <div class="col-md-8 offset-md-2 col-xs-12" [hidden]="applied">
         <h1 class="text-xs-center">{{ title }}</h1>
-        <p class="text-xs-center">
-          <a [routerLink]="['/login']" *ngIf="authType == 'register'">Hvis du allerede har en bruger, klik her</a>
-          <a [routerLink]="['/register']" *ngIf="authType == 'login'">For at anmode om en bruger, klik her</a>
-        </p>
         <app-list-errors [errors]="errors"></app-list-errors>
         <form [formGroup]="authForm" (ngSubmit)="submitForm()">
           <fieldset [disabled]="isSubmitting">
@@ -42,9 +38,13 @@
                 type="password"
                 *ngIf="authType != 'register'" />
             </fieldset>
-            <button class="btn btn-lg btn-primary pull-xs-right" [disabled]="!authForm.valid || isSubmitting" type="submit">
+            <button class="btn btn-xs btn-primary pull-xs-right" [disabled]="!authForm.valid || isSubmitting" type="submit">
               {{ title }}
             </button>
+            <p class="text-xs-center">
+              <a [routerLink]="['/login']" *ngIf="authType == 'register'" class="btn btn-xs btn-info pull-xs-left authnav">Tilbage</a>
+              <a [routerLink]="['/register']" *ngIf="authType == 'login'" class="btn btn-xs btn-info pull-xs-left authnav">Anmod om adgang</a>
+            </p>
           </fieldset>
         </form>
       </div>

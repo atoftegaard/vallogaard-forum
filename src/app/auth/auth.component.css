@@ -1,0 +1,14 @@
+.auth-page {
+    background-color: rgba(255, 255, 255, 0.6);
+    padding: 1em 0 2em 0;
+    margin-top: 2em;
+}
+
+.authnav {
+    color: black;
+}
+
+.btn-info {
+    background-color: transparent;
+    border: black 1px solid;
+}

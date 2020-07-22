@@ -13,10 +13,13 @@ import { Observable } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
 import * as firebase from 'firebase/app';
 import * as uuid from 'uuid';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-article-page',
-  templateUrl: './article.component.html'
+  templateUrl: './article.component.html',
+  providers:[DatePipe],
+  styleUrls: ['./article.component.css']
 })
 export class ArticleComponent implements OnInit {
 
@@ -72,7 +75,7 @@ export class ArticleComponent implements OnInit {
 
   ngOnInit() {
     this.article = this.route.snapshot.data.article;
-    this.comments = this.db.collection<Comment>('comments', ref => ref.orderBy('createdAt', 'desc').where('slug', '==', this.route.snapshot.params.slug)).valueChanges();
+    this.comments = this.db.collection<Comment>('comments', ref => ref.orderBy('createdAt', 'asc').where('slug', '==', this.route.snapshot.params.slug)).valueChanges();
   }
 
   deleteArticle() {
