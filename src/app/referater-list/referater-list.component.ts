@@ -33,7 +33,7 @@ export class ReferaterListComponent implements OnInit {
     }
 
     this.referater = this.db.collection<Referat>('referater', ref => ref.orderBy('from', 'asc')).valueChanges();
-    this.referater.subscribe(x =>{
+    this.referater.subscribe(x => {
       this.loading = false;
     });
   }

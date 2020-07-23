@@ -5,7 +5,7 @@ import { Article } from '../../core';
 @Component({
   selector: 'app-article-meta',
   templateUrl: './article-meta.component.html',
-  providers:[DatePipe]
+  providers: [DatePipe]
 })
 export class ArticleMetaComponent {
   @Input() article: Article;

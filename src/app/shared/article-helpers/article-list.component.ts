@@ -25,14 +25,14 @@ export class ArticleListComponent implements OnInit {
   set config(config: {}) { }
 
   ngOnInit() {
-    this.loading = true
+    this.loading = true;
     if (!this.authService.isLoggedIn) {
       this.router.navigate(['/login']);
       return;
     }
 
     this.articles = this.db.collection<Article>('articles').valueChanges();
-    this.articles.subscribe(x =>{
+    this.articles.subscribe(x => {
       this.loading = false;
     });
   }

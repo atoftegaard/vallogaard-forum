@@ -1,5 +1,5 @@
-import { Profile } from "../core/models/profile.model";
+import { Profile } from '../core/models/profile.model';
 
 export interface SettingsRouteData {
-    profile: Profile
+    profile: Profile;
 }

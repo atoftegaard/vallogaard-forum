@@ -2,7 +2,7 @@ import { Component, OnInit, Renderer2, Inject } from '@angular/core';
 import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Errors } from '../core';
-import { AuthService } from  '../auth/auth.service';
+import { AuthService } from '../auth/auth.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AngularFireFunctions, FUNCTIONS_ORIGIN } from '@angular/fire/functions';
 import { DOCUMENT } from '@angular/common';
@@ -72,10 +72,10 @@ export class AuthComponent implements OnInit {
   sendApplicationNotification(name: string, email: string, address: string) {
     const callable = this.fns.httpsCallable('applyForUser');
     callable({
-      "destination": 'andreas@toftegaard.it',
-      "name": name,
-      "email": email,
-      "address": address
+      'destination': 'andreas@toftegaard.it',
+      'name': name,
+      'email': email,
+      'address': address
     });
   }
 }

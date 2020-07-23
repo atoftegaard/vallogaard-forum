@@ -1,7 +1,7 @@
-import { Injectable } from  '@angular/core';
-import { Router } from  "@angular/router";
-import { AngularFireAuth } from  "@angular/fire/auth";
-import { User } from  'firebase';
+import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
+import { AngularFireAuth } from  '@angular/fire/auth';
+import { User } from 'firebase';
 import { Profile } from '../core/models/profile.model';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { first, map } from 'rxjs/operators';
@@ -42,11 +42,11 @@ export  class  AuthService {
         this.router.navigate(['/']);
       }, 50);
     } catch (e) {
-      alert("Error!"  +  e.message);
+      alert('Error! '  +  e.message);
     }
   }
 
-  async logout(){
+  async logout() {
     await this.afAuth.auth.signOut();
     localStorage.removeItem('user');
     this.router.navigate(['/login']);

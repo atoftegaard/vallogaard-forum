@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { ImageService } from '../core/services/settings-file-upload.service';
 import { Referat } from '../core/models/referat.model';
-import { first, map } from 'rxjs/operators';
 import { AngularFirestore } from '@angular/fire/firestore';
 
 class FileSnippet {
@@ -24,8 +23,7 @@ export class ReferatUploadComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private imageService: ImageService,
-    private db: AngularFirestore)
-   {
+    private db: AngularFirestore) {
     this.settingsForm = this.fb.group({
       file: '',
       title: '',
@@ -39,7 +37,7 @@ export class ReferatUploadComponent implements OnInit {
 
   submitForm() {
     this.isSubmitting = true;
-    let that = this;
+    const that = this;
     this.updateReferat(this.settingsForm.value);
 
     const reader = new FileReader();
@@ -52,16 +50,15 @@ export class ReferatUploadComponent implements OnInit {
           uploadedAt: that.referat.uploadedAt
         })
         .then(function() {
-            console.log("Document successfully written!");
             that.settingsForm.reset();
             that.isSubmitting = false;
             that.uploadNew = false;
         })
         .catch(function(error) {
-            console.error("Error writing document: ", error);
+            console.error('Error writing document: ', error);
             that.isSubmitting = false;
         });
-      }, (err) => { console.error(err); })
+      }, (err) => { console.error(err); });
     });
 
     reader.readAsDataURL(this.selectedFile.file);

@@ -54,12 +54,12 @@ export class SettingsComponent implements OnInit {
     const collection = this.db.collection<Profile>('profiles', ref => ref.where('uid', '==', this.authService.user.uid));
     collection.snapshotChanges().pipe(first(), map(x => x[0])).subscribe((profile) => {
       const profileId = profile.payload.doc.id;
-      let profileRef = this.db.collection('profiles').doc(profileId);
+      const profileRef = this.db.collection('profiles').doc(profileId);
       profileRef.set(this.profile, { merge: true }).then(() => {
         this.isSubmitting = false;
       })
       .catch(function(error) {
-        console.error("Error writing document: ", error);
+        console.error('Error writing document: ', error);
         this.isSubmitting = false;
       });
     });
@@ -81,8 +81,8 @@ export class SettingsComponent implements OnInit {
       this.imageService.uploadImage(this.selectedFile.file).subscribe((url) => {
         this.profile.image = url;
         this.authService.updateProfile();
-       }, (err) => { console.error(err); })
-      //todo, oprydning hvis billeder ændres.
+       }, (err) => { console.error(err); });
+      // todo, oprydning hvis billeder ændres.
     });
 
     reader.readAsDataURL(file);

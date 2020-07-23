@@ -15,7 +15,7 @@ import { Editor } from 'primeng/editor';
 @Component({
   selector: 'app-article-page',
   templateUrl: './article.component.html',
-  providers:[DatePipe],
+  providers: [DatePipe],
   styleUrls: ['./article.component.css']
 })
 
@@ -27,10 +27,10 @@ export class ArticleComponent implements OnInit {
     private db: AngularFirestore,
     private authService: AuthService
   ) { }
-  
+
   commentContent: string;
   article: Article;
-  comments: Observable<Comment[]>
+  comments: Observable<Comment[]>;
   currentUser: Profile;
   canModify: boolean;
   commentFormErrors = {};
@@ -38,7 +38,7 @@ export class ArticleComponent implements OnInit {
   isDeleting = false;
 
   imageHandler() {
-    let that = this;
+    const that = this;
     const input = document.createElement('input');
     input.setAttribute('type', 'file');
     input.setAttribute('accept', 'image/*');
@@ -46,28 +46,28 @@ export class ArticleComponent implements OnInit {
     const quill = this.editor.quill;
     input.onchange = async function() {
       if (input.files.length) {
-        let file = input.files[0];
-        let range = quill.getSelection(true);
-        let fileName = uuid.v4()
-        let storageRef = firebase.storage().ref();
-        let imageRef = storageRef.child(fileName);
+        const file = input.files[0];
+        const range = quill.getSelection(true);
+        const fileName = uuid.v4();
+        const storageRef = firebase.storage().ref();
+        const imageRef = storageRef.child(fileName);
 
         quill.insertEmbed(range.index, 'image', 'assets/img/loading_large.gif');
         quill.setSelection(range.index + 1);
 
         imageRef.put(file).then(() => {
-          const storageRef = firebase.storage().ref().child(fileName + '_500x500');
-          that.keepTrying(10, storageRef).then((url) => {
+          const lStorageRef = firebase.storage().ref().child(fileName + '_500x500');
+          that.keepTrying(10, lStorageRef).then((url) => {
             quill.deleteText(range.index, 1);
             quill.insertEmbed(range.index, 'image', url);
           });
         });
       }
-    }
+    };
   }
 
   delay(t, v) {
-    return new Promise(function(resolve) { 
+    return new Promise(function(resolve) {
       setTimeout(resolve.bind(null, v), t)
     });
   }
@@ -76,20 +76,20 @@ export class ArticleComponent implements OnInit {
     if (triesRemaining < 0) {
       return Promise.reject('out of tries');
     }
-  
+
     return storageRef.getDownloadURL().then((url) => {
       return url;
     }).catch((error) => {
       switch (error.code) {
         case 'storage/object-not-found':
           return this.delay(2000, this).then(() => {
-            return this.keepTrying(triesRemaining - 1, storageRef)
+            return this.keepTrying(triesRemaining - 1, storageRef);
           });
         default:
           console.log(error);
           return Promise.reject(error);
       }
-    })
+    });
   }
 
   ngOnInit() {
@@ -116,7 +116,7 @@ export class ArticleComponent implements OnInit {
   addComment() {
     this.isSubmitting = true;
     this.commentFormErrors = {};
-    let that = this;
+    const that = this;
     this.db.collection('comments').add({
         slug: this.article.slug,
         body: this.editor.quill.root.innerHTML,
@@ -128,7 +128,7 @@ export class ArticleComponent implements OnInit {
         that.isSubmitting = false;
     })
     .catch(function(error) {
-        console.error("Error writing document: ", error);
+        console.error('Error writing document: ', error);
         that.isSubmitting = false;
     });
   }

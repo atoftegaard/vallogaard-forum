@@ -6,7 +6,7 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import { AuthService } from '../auth/auth.service';
 import { first, map } from 'rxjs/operators';
 import { AngularFireFunctions } from '@angular/fire/functions';
-let slug = require('slug');
+const slug = require('slug');
 
 @Component({
   selector: 'app-editor-page',
@@ -19,12 +19,6 @@ export class EditorComponent implements OnInit {
   tagField = new FormControl();
   error: string;
   isSubmitting = false;
-  /*commentOptions: Object = {
-    charCounterCount: false,
-    attribution:false,
-    placeholderText: "Skriv opslag her",
-    toolbarButtons: ['bold', 'italic', 'underline', 'strikeThrough', 'subscript', 'superscript', 'insertTable', '|', 'insertLink', 'insertImage', '|', 'undo', 'redo']
-  };*/
 
   constructor(
     private route: ActivatedRoute,
@@ -60,7 +54,7 @@ export class EditorComponent implements OnInit {
     this.updateArticle(this.articleForm.value);
     this.article.author = this.authService.profile;
 
-    let that = this;
+    const that = this;
     const collection = this.db.collection<Article>('articles', ref => ref.where('slug', '==', this.article.slug));
     collection.valueChanges().pipe(first(), map(x => x[0])).subscribe(a => {
       if (a) {
@@ -69,25 +63,24 @@ export class EditorComponent implements OnInit {
         that.isSubmitting = false;
       } else {
         // post the changes
-        let articleRef = this.db.collection('articles').doc(this.article.slug);
+        const articleRef = this.db.collection('articles').doc(this.article.slug);
 
         articleRef.set(this.article, { merge: true }).then(() => {
           that.router.navigateByUrl('/article/' + that.article.slug),
           this.fns.httpsCallable('notifyNewArticle')({
-            "articlename": this.article.title,
-            "articleurl": `${window.location.origin}/article/${this.article.slug}`,
-            "authorname": this.article.author.name,
-            "authoruid": this.article.author.uid
+            'articlename': this.article.title,
+            'articleurl': `${window.location.origin}/article/${this.article.slug}`,
+            'authorname': this.article.author.name,
+            'authoruid': this.article.author.uid
           });
           that.isSubmitting = false;
         })
         .catch(function(error) {
-          console.error("Error writing document: ", error);
+          console.error('Error writing document: ', error);
           that.isSubmitting = false;
         });
       }
     });
-    
   }
 
   updateArticle(values: Object) {

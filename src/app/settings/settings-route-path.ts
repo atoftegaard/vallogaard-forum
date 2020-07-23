@@ -1,3 +1,3 @@
 export interface SettingsRoutePath {
-    uid: string
+    uid: string;
 }
