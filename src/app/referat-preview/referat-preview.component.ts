@@ -6,7 +6,7 @@ import { DatePipe } from '@angular/common';
   selector: 'app-referat-preview',
   templateUrl: './referat-preview.component.html',
   styleUrls: ['./referat-preview.component.css'],
-  providers:[DatePipe]
+  providers: [DatePipe]
 })
 export class ReferatPreviewComponent implements OnInit {
   @Input() referat: Referat;

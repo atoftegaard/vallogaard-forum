@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, ViewChild } from '@angular/core';
+import { Component, OnInit, Inject, ViewChild, AfterViewInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Article, Comment, Profile } from '../core';
 import { TypedRoute } from 'ngx-typed-router';
@@ -19,7 +19,7 @@ import { Editor } from 'primeng/editor';
   styleUrls: ['./article.component.css']
 })
 
-export class ArticleComponent implements OnInit {
+export class ArticleComponent implements OnInit, AfterViewInit  {
   @ViewChild(Editor) editor: Editor;
 
   constructor(@Inject(ActivatedRoute) private route: TypedRoute<ArticleRouteData,
@@ -68,10 +68,10 @@ export class ArticleComponent implements OnInit {
 
   delay(t, v) {
     return new Promise(function(resolve) {
-      setTimeout(resolve.bind(null, v), t)
+      setTimeout(resolve.bind(null, v), t);
     });
   }
-  
+
   keepTrying(triesRemaining, storageRef) {
     if (triesRemaining < 0) {
       return Promise.reject('out of tries');

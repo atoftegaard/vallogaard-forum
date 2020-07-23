@@ -24,4 +24,4 @@ const routes: Routes = [
   ]
 })
 
-export class ArticleRoutingModule {};
+export class ArticleRoutingModule {}
