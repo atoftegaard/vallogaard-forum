@@ -1,10 +1,6 @@
-import { Component, OnInit, Inject } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import {
-  Article,
-  Comment,
-  Profile,
-} from '../core';
+import { Component, OnInit, Inject, ViewChild } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { Article, Comment, Profile } from '../core';
 import { TypedRoute } from 'ngx-typed-router';
 import { ArticleRouteData } from './article-route-data';
 import { ArticleRoutePath } from './article-route-path';
@@ -14,6 +10,7 @@ import { AuthService } from '../auth/auth.service';
 import * as firebase from 'firebase/app';
 import * as uuid from 'uuid';
 import { DatePipe } from '@angular/common';
+import { Editor } from 'primeng/editor';
 
 @Component({
   selector: 'app-article-page',
@@ -21,7 +18,9 @@ import { DatePipe } from '@angular/common';
   providers:[DatePipe],
   styleUrls: ['./article.component.css']
 })
+
 export class ArticleComponent implements OnInit {
+  @ViewChild(Editor) editor: Editor;
 
   constructor(@Inject(ActivatedRoute) private route: TypedRoute<ArticleRouteData,
    ArticleRoutePath>,
@@ -37,45 +36,70 @@ export class ArticleComponent implements OnInit {
   commentFormErrors = {};
   isSubmitting = false;
   isDeleting = false;
-  images: File[] = [];
-  commentOptions: string;
-  /*
-  commentOptions: Object = {
-    height: 300,
-    charCounterCount: false,
-    attribution:false,
-    placeholderText: "Skriv opslag her",
-    toolbarButtons: ['bold', 'italic', 'underline', 'strikeThrough', 'subscript', 'superscript', 'insertTable', '|', 'insertLink', 'insertImage', '|', 'undo', 'redo'],
-    imageUploadParam: 'image_param',
-    // Set max image size to 5MB.
-    imageMaxSize: 5 * 1024 * 1024,
-    imageAllowedTypes: ['jpeg', 'jpg', 'png'],
-    events:  {
-      'image.beforeUpload': function(images: FileList) {
-        if  (images.length) {
-          const imgId = uuid.v4();
-          let storageRef = firebase.storage().ref();
-          let imageRef = storageRef.child(imgId);
-          let editor = this;
-          imageRef.put(images[0]).then(() => {
-            imageRef.getDownloadURL().then((url) => {
-              editor.image.insert(url, null, null, editor.image.get());
-            });
-          });
-        }
-        return  false;
-      },
-      'image.beforeRemove': (image) => {
+
+  imageHandler() {
+    let that = this;
+    const input = document.createElement('input');
+    input.setAttribute('type', 'file');
+    input.setAttribute('accept', 'image/*');
+    input.click();
+    const quill = this.editor.quill;
+    input.onchange = async function() {
+      if (input.files.length) {
+        let file = input.files[0];
+        let range = quill.getSelection(true);
+        let fileName = uuid.v4()
         let storageRef = firebase.storage().ref();
-        let imgId = image[0].src.substring(image[0].src.indexOf('/o/') + 3, image[0].src.indexOf('?'));
-        storageRef.child(imgId).delete();
+        let imageRef = storageRef.child(fileName);
+
+        quill.insertEmbed(range.index, 'image', 'assets/img/loading_large.gif');
+        quill.setSelection(range.index + 1);
+
+        imageRef.put(file).then(() => {
+          const storageRef = firebase.storage().ref().child(fileName + '_500x500');
+          that.keepTrying(10, storageRef).then((url) => {
+            quill.deleteText(range.index, 1);
+            quill.insertEmbed(range.index, 'image', url);
+          });
+        });
       }
     }
-  };*/
+  }
+
+  delay(t, v) {
+    return new Promise(function(resolve) { 
+      setTimeout(resolve.bind(null, v), t)
+    });
+  }
+  
+  keepTrying(triesRemaining, storageRef) {
+    if (triesRemaining < 0) {
+      return Promise.reject('out of tries');
+    }
+  
+    return storageRef.getDownloadURL().then((url) => {
+      return url;
+    }).catch((error) => {
+      switch (error.code) {
+        case 'storage/object-not-found':
+          return this.delay(2000, this).then(() => {
+            return this.keepTrying(triesRemaining - 1, storageRef)
+          });
+        default:
+          console.log(error);
+          return Promise.reject(error);
+      }
+    })
+  }
 
   ngOnInit() {
     this.article = this.route.snapshot.data.article;
-    this.comments = this.db.collection<Comment>('comments', ref => ref.orderBy('createdAt', 'asc').where('slug', '==', this.route.snapshot.params.slug)).valueChanges();
+    this.comments = this.db.collection<Comment>('comments', ref => ref.orderBy('createdAt', 'asc')
+      .where('slug', '==', this.route.snapshot.params.slug)).valueChanges();
+  }
+
+  ngAfterViewInit() {
+    this.editor.quill.getModule('toolbar').addHandler('image', this.imageHandler.bind(this));
   }
 
   deleteArticle() {
@@ -95,12 +119,11 @@ export class ArticleComponent implements OnInit {
     let that = this;
     this.db.collection('comments').add({
         slug: this.article.slug,
-        body: this.commentContent,
+        body: this.editor.quill.root.innerHTML,
         createdAt: new Date(),
         author: this.authService.profile
     })
     .then(function() {
-        console.log("Document successfully written!");
         that.commentContent = '';
         that.isSubmitting = false;
     })

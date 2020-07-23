@@ -1,3 +1,11 @@
+<div class="btn-wrapper">
+  <a class="btn btn-primary btn-lg"
+    routerLink="/editor"
+    routerLinkActive="active">
+    <i class="ion-compose"></i>Nyt opslag
+  </a>
+</div>
+
 <app-article-preview
   *ngFor="let article of articles | async"
   [article]="article">

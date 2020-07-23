@@ -1,0 +1,24 @@
+<div class="page-wrapper">
+    <div class="container page">
+        <div class="col-md-12">
+            <div class="btn-wrapper">
+                <app-referat-upload></app-referat-upload>
+            </div>
+                
+            <app-referat-preview
+                *ngFor="let referat of referater | async"
+                [referat]="referat">
+            </app-referat-preview>
+            
+            <div class="app-referat-preview"
+                [hidden]="!loading">
+            Henter referater...
+            </div>
+            
+            <div class="app-referat-preview"
+                [hidden]="!(!loading && (referater | async)?.length === 0)">
+                Der er endnu ikke lagt nogle referater op.
+            </div>
+        </div>
+    </div>
+</div>

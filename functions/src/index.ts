@@ -50,7 +50,8 @@ exports.applyForUser = functions.https.onRequest((req: any, res: any) => {
                 'image': image,
                 'notifyAboutNewArticles': true,
                 'notifyAboutNewComments': true,
-                'uid': userRecord.uid
+                'uid': userRecord.uid,
+                'role': 'user'
               })
               .then(() => {
                 console.log('profile added');

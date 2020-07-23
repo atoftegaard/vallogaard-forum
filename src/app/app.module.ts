@@ -15,6 +15,9 @@ import { AngularFireFunctionsModule, FunctionsRegionToken } from '@angular/fire/
 import { EditorModule } from 'primeng/editor';
 import { registerLocaleData } from '@angular/common';
 import localeDa from '@angular/common/locales/da';
+import { ReferaterListComponent } from './referater-list/referater-list.component';
+import { ReferatPreviewComponent } from './referat-preview/referat-preview.component';
+import { ReferatUploadComponent } from './referat-upload/referat-upload.component';
 
 registerLocaleData(localeDa);
 
@@ -35,7 +38,7 @@ const cookieConfig: NgcCookieConsentConfig = {
 };
 
 @NgModule({
-  declarations: [AppComponent, FooterComponent, HeaderComponent],
+  declarations: [AppComponent, FooterComponent, HeaderComponent, ReferaterListComponent, ReferatPreviewComponent, ReferatUploadComponent],
   imports: [
     BrowserModule,
     EditorModule,

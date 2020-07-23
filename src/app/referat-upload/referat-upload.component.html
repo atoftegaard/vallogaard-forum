@@ -1,0 +1,50 @@
+<div *ngIf="uploadNew">
+    <form [formGroup]="settingsForm" (ngSubmit)="submitForm()">
+        <fieldset [disabled]="isSubmitting">
+            <fieldset class="form-group">
+                <div *ngIf="selectedFile" class="file-container">
+                    <div *ngIf="selectedFile.pending" class="file-loading-overlay">
+                        <div class="file-spinning-circle"></div>
+                    </div>
+                </div>
+                <p>
+                    <span>Vælg et referat (i pdf-format)</span>
+                    <input #imageInput class="form-control form-control-lg" type="file"
+                        (change)="processFile(imageInput)" formControlName="file" accept="pdf">
+                </p>
+            </fieldset>
+
+            <fieldset class="form-group">
+                <span>Titel</span>
+                <input class="form-control form-control-lg"
+                  type="text"
+                  placeholder="Angiv titel"
+                  formControlName="title" />
+              </fieldset>
+
+              <fieldset class="form-group">
+                  <span>Afholdelsesdato</span>
+                  <input class="form-control form-control-lg"
+                    type="date"
+                    placeholder="Vælg dato"
+                    formControlName="date" />
+                </fieldset>
+
+            <button class="btn btn-lg btn-default pull-xs-left" type="button"
+                (click)="uploadNew=false" *ngIf="uploadNew">
+                Fortryd
+            </button>
+
+            <button class="btn btn-lg btn-primary pull-xs-right"
+                type="submit">
+                Læg referat op
+            </button>
+        </fieldset>
+    </form>
+</div>
+<div>
+    <button class="btn btn-lg btn-primary" type="button"
+        (click)="uploadNew=true" *ngIf="!uploadNew">
+        Læg nyt referat op
+    </button>
+</div>

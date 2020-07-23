@@ -46,7 +46,30 @@
             <form class="card comment-form" (ngSubmit)="addComment()">
               <fieldset [disabled]="isSubmitting">
                 <div class="card-block">
-                  <p-editor [(ngModel)]="commentContent" [style]="{'height':'320px'}" name="comment"></p-editor>
+                  <p-editor [(ngModel)]="commentContent" [style]="{'height':'320px'}" name="comment">
+                    <p-header>
+                      <span class="ql-formats">
+                        <select class="ql-size">
+                          <option selected></option>
+                          <option value="large">Stor</option>
+                          <option value="huge">Større</option>
+                        </select>
+                      </span>
+                      <span class="ql-formats">
+                        <button class="ql-bold" aria-label="Bold"></button>
+                        <button class="ql-italic" aria-label="Italic"></button>
+                        <button class="ql-underline" aria-label="Underline"></button>
+                      </span>
+                      <span class="ql-formats">
+                        <button class="ql-list" value="ordered"></button>
+                        <button class="ql-list" value="bullet"></button>      
+                      </span>
+                      <span class="ql-formats">
+                        <button aria-label="Link" class="ql-link"></button>
+                        <button aria-label="Image" class="ql-image"></button>
+                      </span>
+                    </p-header>
+                  </p-editor>
                 </div>
                 <div class="card-footer">
                   <!-- <img [src]="currentUser.image" class="comment-author-img" /> -->

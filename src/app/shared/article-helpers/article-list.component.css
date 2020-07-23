@@ -1,3 +1,8 @@
 .page-link {
   cursor: pointer;
 }
+
+.btn-wrapper {
+  text-align: center;
+  margin-bottom: 2em;
+}

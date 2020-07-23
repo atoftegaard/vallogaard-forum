@@ -1,11 +1,15 @@
 .nav-link {
-  cursor:pointer;
+  cursor: pointer;
 }
 
 .tag-pill{
-  cursor:pointer;
+  cursor: pointer;
 }
 
 .page-wrapper {
   background-color: white;
+}
+
+.banner {
+  background-color: #333;
 }
