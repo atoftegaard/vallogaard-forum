@@ -1,13 +1,10 @@
 <div class="article-preview row">
-
-  <div class="col-xs-8" style="padding-bottom: 2em;">
+  <div class="col-md-12">
     <a [routerLink]="['/article', article.slug]" class="preview-link">
       <h1>{{ article.title }}</h1>
-      <span>Klik her, for at læse opslaget...</span>
+      <span>Klik her, for at læse opslaget</span>
     </a>
-  </div>
-
-  <div class="col-xs-4">
+    <div class="rule"></div>
     <app-article-meta [article]="article"></app-article-meta>
   </div>
 </div>

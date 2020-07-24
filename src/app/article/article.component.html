@@ -2,7 +2,7 @@
 
   <div class="banner">
     <div class="container">
-      <h1>{{ article.title }}</h1>
+      <h1>{{ article?.title }}</h1>
 
       <app-article-meta [article]="article">
 
@@ -24,7 +24,7 @@
 
   <div class="page-wrapper">
     <div class="container page">
-      <div class="row article-content">
+      <div class="article-content">
         <div class="col-md-12">
           <div [innerHTML]="article.body"></div>
         </div>

@@ -25,6 +25,7 @@ export class SettingsComponent implements OnInit {
   profile = {} as Profile;
   settingsForm: FormGroup;
   errors: Object = {};
+  updated = false;
   isSubmitting = false;
   isLoadingImage = false;
   selectedFile: ImageSnippet;
@@ -54,6 +55,7 @@ export class SettingsComponent implements OnInit {
 
   submitForm() {
     const that = this;
+    this.updated = false;
     this.isSubmitting = true;
     this.updateUser(this.settingsForm.value);
 
@@ -63,6 +65,7 @@ export class SettingsComponent implements OnInit {
       const profileRef = this.db.collection('profiles').doc(profileId);
       profileRef.set(this.profile, { merge: true }).then(() => {
         that.isSubmitting = false;
+        that.updated = true;
       })
       .catch(function(error) {
         console.error('Error writing document: ', error);

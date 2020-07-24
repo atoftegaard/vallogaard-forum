@@ -6,10 +6,12 @@
   </a>
 </div>
 
-<app-article-preview
-  *ngFor="let article of articles | async"
-  [article]="article">
-</app-article-preview>
+<div class="container">
+  <app-article-preview
+    *ngFor="let article of articles | async"
+    [article]="article">
+  </app-article-preview>
+</div>
 
 <div class="app-article-preview"
   [hidden]="!loading">

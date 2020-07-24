@@ -1,9 +1,20 @@
 <div class="settings-page">
+  <div class="banner">
+    <div class="container">
+      <h1 class="logo-font">Indstillinger</h1>
+      <div class="article-meta">
+          <div class="info">
+              <span class="author"></span>
+              <span class="date"></span>
+              <span class="date" style="padding-top: 5px;"></span>
+          </div>
+        </div>              
+    </div>
+  </div>
+
   <div class="container page">
     <div class="row">
       <div class="col-md-6 offset-md-3 col-xs-12">
-
-        <h1 class="text-xs-center">Indstillinger</h1>
 
         <app-list-errors [errors]="errors"></app-list-errors>
 
@@ -11,7 +22,7 @@
           <fieldset [disabled]="isSubmitting">
 
             <fieldset class="form-group">
-              <p>
+              <p style="text-align: center;">
                 <img [src]="profile.image" class="img-profile" *ngIf="!isLoadingImage" />
                 <img src="assets/img/loading_large.gif" *ngIf="isLoadingImage" />
               </p>
@@ -68,6 +79,8 @@
                 Send e-mailnotifikation, når et opslag kommenteres
               </label>
             </fieldset>
+
+            <span class="text-success" *ngIf="updated">Indstillingerne blev opdateret!</span>
 
             <button class="btn btn-lg btn-primary pull-xs-right"
               type="submit" [disabled]="!settingsForm.valid || isSubmitting">
