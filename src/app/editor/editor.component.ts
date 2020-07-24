@@ -7,11 +7,10 @@ import { AuthService } from '../auth/auth.service';
 import { first, map } from 'rxjs/operators';
 import { AngularFireFunctions } from '@angular/fire/functions';
 import { Editor } from 'primeng/editor';
-import * as firebase from 'firebase';
 import * as uuid from 'uuid';
 import { EditorHelper } from '../shared/editor-helper';
-
-const slug = require('slug');
+import { storage } from 'firebase';
+import * as slug from 'slug';
 
 @Component({
   selector: 'app-editor-page',
@@ -69,14 +68,14 @@ export class EditorComponent implements OnInit, AfterViewInit {
         const file = input.files[0];
         const range = quill.getSelection(true);
         const fileName = uuid.v4();
-        const storageRef = firebase.storage().ref();
+        const storageRef = storage().ref();
         const imageRef = storageRef.child(fileName);
 
         quill.insertEmbed(range.index, 'image', 'assets/img/loading_large.gif');
         quill.setSelection(range.index + 1);
 
         imageRef.put(file).then(() => {
-          const lStorageRef = firebase.storage().ref().child(fileName + '_500x500');
+          const lStorageRef = storage().ref().child(fileName + '_500x500');
           that.editorHelper.keepTrying(10, lStorageRef).then((url) => {
             quill.deleteText(range.index, 1);
             quill.insertEmbed(range.index, 'image', url);

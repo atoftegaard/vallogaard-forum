@@ -68,7 +68,7 @@ exports.applyForUser = functions.https.onRequest((req: any, res: any) => {
                         console.log('sendMail error', error.toString());
                         return res.status(500).send(error.toString());
                     }
-                    return res.send('OK');
+                    return res.status(200).send();
                 });
               })
               .catch((error: any) => {
@@ -121,7 +121,7 @@ exports.notifyNewArticle = functions.https.onRequest((req: any, res: any) => {
                         console.log('sendMail error', error.toString());
                         return res.status(500).send(error.toString());
                     }
-                    return res.send('OK');
+                    return res.status(200).send();
                 });
             });
         });
