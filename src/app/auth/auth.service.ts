@@ -60,7 +60,7 @@ export  class  AuthService {
     this.router.navigate(['/login']);
   }
 
-  async loggedIn(){
+  async loggedIn() {
     return new Promise((resolve, reject) => {
         const unsubscribe = this.afAuth.onAuthStateChanged(user => {
           resolve(user);
