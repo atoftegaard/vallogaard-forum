@@ -11,7 +11,7 @@ import { FooterComponent, HeaderComponent, SharedModule } from './shared';
 import { AppRoutingModule } from './app-routing.module';
 import { CoreModule } from './core/core.module';
 import { NgcCookieConsentModule, NgcCookieConsentConfig } from 'ngx-cookieconsent';
-import { AngularFireFunctionsModule, FunctionsRegionToken } from '@angular/fire/functions';
+import { AngularFireFunctionsModule } from '@angular/fire/functions';
 import { EditorModule } from 'primeng/editor';
 import { registerLocaleData } from '@angular/common';
 import localeDa from '@angular/common/locales/da';
@@ -54,7 +54,6 @@ const cookieConfig: NgcCookieConsentConfig = {
     NgcCookieConsentModule.forRoot(cookieConfig)
   ],
   providers: [
-    { provide: FunctionsRegionToken, useValue: 'us-central1' },
     { provide: LOCALE_ID, useValue: 'da' }
   ],
   bootstrap: [AppComponent]

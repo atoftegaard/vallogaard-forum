@@ -24,8 +24,10 @@ export class ArticleListComponent implements OnInit {
   @Input()
   set config(config: {}) { }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.loading = true;
+    await this.authService.loggedIn();
+    
     if (!this.authService.isLoggedIn) {
       this.router.navigate(['/login']);
       return;

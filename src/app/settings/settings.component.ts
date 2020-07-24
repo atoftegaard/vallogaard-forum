@@ -22,7 +22,7 @@ class ImageSnippet {
   styles: ['.form-control-inline { width: auto; display: inline; } .img-profile { max-width: 18em; max-height: 18em; }']
 })
 export class SettingsComponent implements OnInit {
-  profile: Profile;
+  profile = {} as Profile;
   settingsForm: FormGroup;
   errors: Object = {};
   isSubmitting = false;
@@ -45,7 +45,9 @@ export class SettingsComponent implements OnInit {
     });
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    await this.authService.loggedIn();
+
     this.profile = this.route.snapshot.data.profile;
     this.settingsForm.patchValue(this.profile);
   }

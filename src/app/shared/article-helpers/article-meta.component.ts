@@ -13,6 +13,10 @@ export class ArticleMetaComponent {
   constructor(private datePipe: DatePipe) {}
 
   toLongDate(date: any) {
-    return this.datePipe.transform(date.toDate(), 'longDate');
+    if (date) {
+      return this.datePipe.transform(date.toDate(), 'longDate');
+    } else {
+      return '';
+    }
   }
 }

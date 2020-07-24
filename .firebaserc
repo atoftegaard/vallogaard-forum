@@ -5,7 +5,7 @@
   "targets": {
     "vallogaard-2019": {
       "hosting": {
-        "ang2-forum": [
+        "vallogaard": [
           "vallogaard-2019"
         ]
       }

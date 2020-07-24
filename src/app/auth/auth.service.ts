@@ -20,7 +20,7 @@ export  class  AuthService {
     private db: AngularFirestore
   ) {
     this.isAdminPromise = new Promise<boolean>((resolve) => {
-      this.afAuth.authState.subscribe(user => {
+      this.afAuth.onAuthStateChanged((user) => {
         if (user) {
           this.user = user;
           this.updateProfile(resolve);
@@ -44,7 +44,7 @@ export  class  AuthService {
 
   async login(email: string, password: string) {
     try {
-      await this.afAuth.auth.signInWithEmailAndPassword(email, password);
+      await this.afAuth.signInWithEmailAndPassword(email, password);
       setTimeout(() => {
         this.router.navigate(['/']);
       }, 50);
@@ -55,9 +55,17 @@ export  class  AuthService {
   }
 
   async logout() {
-    await this.afAuth.auth.signOut();
+    await this.afAuth.signOut();
     localStorage.removeItem('user');
     this.router.navigate(['/login']);
+  }
+
+  async loggedIn(){
+    return new Promise((resolve, reject) => {
+        const unsubscribe = this.afAuth.onAuthStateChanged(user => {
+          resolve(user);
+        }, reject);
+    });
   }
 
   get isLoggedIn(): boolean {

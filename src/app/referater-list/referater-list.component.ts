@@ -25,8 +25,10 @@ export class ReferaterListComponent implements OnInit {
   @Input()
   set config(config: {}) { }
 
-  ngOnInit(): void {
+  async ngOnInit() {
     this.loading = true;
+    await this.authService.loggedIn();
+
     this.authService.isAdmin.then((isAdmin) => {
       this.isAdmin = isAdmin;
     });

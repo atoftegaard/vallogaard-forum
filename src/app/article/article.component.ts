@@ -30,7 +30,7 @@ export class ArticleComponent implements OnInit, AfterViewInit  {
   ) { }
 
   commentContent: string;
-  article: Article;
+  article: Article = { author: {} } as Article;
   comments: Observable<Comment[]>;
   currentUser: Profile;
   canModify: boolean;
@@ -67,7 +67,9 @@ export class ArticleComponent implements OnInit, AfterViewInit  {
     };
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    await this.authService.loggedIn();
+
     this.article = this.route.snapshot.data.article;
     this.comments = this.db.collection<Comment>('comments', ref => ref.orderBy('createdAt', 'desc')
       .where('slug', '==', this.route.snapshot.params.slug)).valueChanges();

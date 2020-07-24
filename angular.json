@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "ang2-forum": {
+    "vallogaard": {
       "root": "",
       "sourceRoot": "src",
       "projectType": "application",
@@ -21,7 +21,8 @@
               "firebase/app",
               "firebase-functions",
               "@firebase/firestore",
-              "@firebase/functions"
+              "@firebase/functions",
+              "@firebase/component"
             ],
             "assets": [
               "src/assets",
@@ -63,18 +64,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "ang2-forum:build"
+            "browserTarget": "vallogaard:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "ang2-forum:build:production"
+              "browserTarget": "vallogaard:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "ang2-forum:build"
+            "browserTarget": "vallogaard:build"
           }
         },
         "test": {
@@ -114,7 +115,7 @@
       }
     }
   },
-  "defaultProject": "ang2-forum",
+  "defaultProject": "vallogaard",
   "schematics": {
     "@schematics/angular:component": {
       "prefix": "app",

@@ -2,6 +2,11 @@
 
 `npm install`
 
+To start local server, running against production backend:
 `ng serve`
 
-`firebase deploy`
+To deploy functions:
+`firebase deploy --only functions`
+
+To deploy app:
+`ng deploy`
