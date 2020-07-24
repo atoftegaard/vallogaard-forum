@@ -18,7 +18,10 @@
             "polyfills": "src/polyfills.ts",
             "allowedCommonJsDependencies": [
               "slug",
-              "firebase/app"
+              "firebase/app",
+              "firebase-functions",
+              "@firebase/firestore",
+              "@firebase/functions"
             ],
             "assets": [
               "src/assets",

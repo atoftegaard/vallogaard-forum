@@ -9,7 +9,7 @@ import { SettingsRoutePath } from './settings-route-path';
 import { AuthService } from '../auth/auth.service';
 import { first, map } from 'rxjs/operators';
 import * as uuid from 'uuid';
-import { storage } from 'firebase';
+import * as firebase from 'firebase/app';
 import { EditorHelper } from '../shared/editor-helper';
 
 class ImageSnippet {
@@ -84,11 +84,11 @@ export class SettingsComponent implements OnInit {
 
     reader.addEventListener('load', (event: any) => {
       const fileName = uuid.v4();
-      const storageRef = storage().ref();
+      const storageRef = firebase.storage().ref();
       const imageRef = storageRef.child(fileName);
 
       imageRef.put(file).then(() => {
-        const lStorageRef = storage().ref().child(fileName + '_500x500');
+        const lStorageRef = firebase.storage().ref().child(fileName + '_500x500');
         that.editorHelper.keepTrying(10, lStorageRef).then((url) => {
           this.profile.image = url;
           this.authService.updateProfile(null);

@@ -7,7 +7,7 @@ import { ArticleRoutePath } from './article-route-path';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
-import { storage } from 'firebase';
+import * as firebase from 'firebase/app';
 import * as uuid from 'uuid';
 import { DatePipe } from '@angular/common';
 import { Editor } from 'primeng/editor';
@@ -50,14 +50,14 @@ export class ArticleComponent implements OnInit, AfterViewInit  {
         const file = input.files[0];
         const range = quill.getSelection(true);
         const fileName = uuid.v4();
-        const storageRef = storage().ref();
+        const storageRef = firebase.storage().ref();
         const imageRef = storageRef.child(fileName);
 
         quill.insertEmbed(range.index, 'image', 'assets/img/loading_large.gif');
         quill.setSelection(range.index + 1);
 
         imageRef.put(file).then(() => {
-          const lStorageRef = storage().ref().child(fileName + '_500x500');
+          const lStorageRef = firebase.storage().ref().child(fileName + '_500x500');
           that.editorHelper.keepTrying(10, lStorageRef).then((url) => {
             quill.deleteText(range.index, 1);
             quill.insertEmbed(range.index, 'image', url);
