@@ -91,7 +91,7 @@ export class SettingsComponent implements OnInit {
         const lStorageRef = firebase.storage().ref().child(fileName + '_500x500');
         that.editorHelper.keepTrying(10, lStorageRef).then((url) => {
           this.profile.image = url;
-          this.authService.updateProfile();
+          this.authService.updateProfile(null);
           this.isLoadingImage = false;
         });
       });
