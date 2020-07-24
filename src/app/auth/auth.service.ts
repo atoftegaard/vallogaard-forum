@@ -13,6 +13,7 @@ export  class  AuthService {
   user: User;
   profile: Profile;
   isAdminPromise: Promise<boolean>;
+
   constructor(
     public afAuth: AngularFireAuth,
     public router: Router,
@@ -47,8 +48,9 @@ export  class  AuthService {
       setTimeout(() => {
         this.router.navigate(['/']);
       }, 50);
+      return true;
     } catch (e) {
-      alert('Error! '  +  e.message);
+      return false;
     }
   }
 

@@ -3,8 +3,7 @@ import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms'
 import { ActivatedRoute } from '@angular/router';
 import { Errors } from '../core';
 import { AuthService } from '../auth/auth.service';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { AngularFireFunctions, FUNCTIONS_ORIGIN } from '@angular/fire/functions';
+import { AngularFireFunctions } from '@angular/fire/functions';
 import { DOCUMENT } from '@angular/common';
 
 @Component({
@@ -16,6 +15,7 @@ export class AuthComponent implements OnInit {
   title: String = '';
   errors: Errors = {errors: {}};
   isSubmitting = false;
+  loginError = false;
   applied = false;
   authForm: FormGroup;
 
@@ -23,7 +23,6 @@ export class AuthComponent implements OnInit {
     private route: ActivatedRoute,
     private fb: FormBuilder,
     private authService:  AuthService,
-    private httpClient: HttpClient,
     private fns: AngularFireFunctions,
     private renderer: Renderer2,
     @Inject(DOCUMENT) private document: Document
@@ -55,10 +54,15 @@ export class AuthComponent implements OnInit {
     if (this.authType === 'register') {
       this.applyForUser();
     } else {
+      this.loginError = false;
       this.isSubmitting = true;
       this.authService.login(this.authForm.value.email, this.authForm.value.password).then(x => {
         this.isSubmitting = false;
-        this.renderer.removeClass(this.document.body, 'body-bg');
+        if (!x) {
+          this.loginError = true;
+        } else {
+          this.renderer.removeClass(this.document.body, 'body-bg');
+        }
       });
     }
   }

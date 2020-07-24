@@ -94,12 +94,11 @@ export class EditorComponent implements OnInit, AfterViewInit {
     this.articleForm.value.createdAt = new Date();
     this.updateArticle(this.articleForm.value);
     this.article.author = this.authService.profile;
-
     const that = this;
+
     const collection = this.db.collection<Article>('articles', ref => ref.where('slug', '==', this.article.slug));
     collection.valueChanges().pipe(first(), map(x => x[0])).subscribe(a => {
       if (a) {
-        console.error('Document already exists');
         that.error = 'Der findes allerede et opslag med samme navn, vælg venligst et andet';
         that.isSubmitting = false;
       } else {

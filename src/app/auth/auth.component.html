@@ -48,6 +48,7 @@
               <a [routerLink]="['/register']" *ngIf="authType == 'login'" class="btn btn-xs btn-info pull-xs-left authnav">Anmod om adgang</a>
             </p>
           </fieldset>
+          <div *ngIf="loginError" class="text-danger pull-xs-right">Forkerte log ind-oplysninger, forsøg igen.</div>
         </form>
       </div>
 

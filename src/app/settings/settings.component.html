@@ -37,6 +37,7 @@
               <span>Dit fulde navn</span>
               <input class="form-control form-control-lg"
                 type="text"
+                required
                 placeholder="Dit fulde navn"
                 formControlName="name" />
             </fieldset>
@@ -45,6 +46,7 @@
               <span>Din e-mail adresse</span>
               <input class="form-control form-control-lg"
                 type="email"
+                required
                 placeholder="Din E-mail adresse"
                 formControlName="email" />
             </fieldset>
@@ -68,7 +70,7 @@
             </fieldset>
 
             <button class="btn btn-lg btn-primary pull-xs-right"
-              type="submit">
+              type="submit" [disabled]="!settingsForm.valid || isSubmitting">
               Opdatér indstillinger
             </button>
 

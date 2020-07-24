@@ -16,11 +16,12 @@
               <input class="form-control form-control-lg"
                 formControlName="title"
                 type="text"
+                required
                 placeholder="Angiv opslagstitel her" />
             </fieldset>
 
             <fieldset class="form-group">
-              <p-editor [style]="{'height':'320px'}" formControlName="body">
+              <p-editor [style]="{'height':'320px'}" formControlName="body" required>
                 <p-header>
                   <span class="ql-formats">
                     <select class="ql-size">
@@ -44,10 +45,10 @@
                   </span>
                 </p-header>
               </p-editor>
-              <!--<div [froalaEditor]='commentOptions' [(froalaModel)]="articleContent"></div>-->
             </fieldset>
 
-            <button class="btn btn-lg pull-xs-right btn-primary" type="button" (click)="submitForm()">
+            <button class="btn btn-lg pull-xs-right btn-primary" type="button" (click)="submitForm()"
+              [disabled]="!articleForm.valid || isSubmitting">
               Slå op
             </button>
 
