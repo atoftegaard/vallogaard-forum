@@ -12,7 +12,8 @@
 
             <fieldset class="form-group">
               <p>
-                <img [src]="profile.image" class="img-profile" />
+                <img [src]="profile.image" class="img-profile" *ngIf="!isLoadingImage" />
+                <img src="assets/img/loading_large.gif" *ngIf="isLoadingImage" />
               </p>
               <div *ngIf="selectedFile" class="img-preview-container">
                 <div class="img-preview{{selectedFile.status === 'fail' ? '-error' : ''}}"

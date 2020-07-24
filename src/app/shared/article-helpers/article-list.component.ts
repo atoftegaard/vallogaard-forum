@@ -31,7 +31,7 @@ export class ArticleListComponent implements OnInit {
       return;
     }
 
-    this.articles = this.db.collection<Article>('articles').valueChanges();
+    this.articles = this.db.collection<Article>('articles', ref => ref.orderBy('createdAt', 'desc')).valueChanges();
     this.articles.subscribe(x => {
       this.loading = false;
     });

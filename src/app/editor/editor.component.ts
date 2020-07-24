@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Article } from '../core';
@@ -6,13 +6,20 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import { AuthService } from '../auth/auth.service';
 import { first, map } from 'rxjs/operators';
 import { AngularFireFunctions } from '@angular/fire/functions';
+import { Editor } from 'primeng/editor';
+import * as firebase from 'firebase';
+import * as uuid from 'uuid';
+import { EditorHelper } from '../shared/editor-helper';
+
 const slug = require('slug');
 
 @Component({
   selector: 'app-editor-page',
   templateUrl: './editor.component.html'
 })
-export class EditorComponent implements OnInit {
+export class EditorComponent implements OnInit, AfterViewInit {
+  @ViewChild(Editor) editor: Editor;
+
   article: Article = {} as Article;
   articleContent: string;
   articleForm: FormGroup;
@@ -26,7 +33,8 @@ export class EditorComponent implements OnInit {
     private db: AngularFirestore,
     private fb: FormBuilder,
     private authService: AuthService,
-    private fns: AngularFireFunctions
+    private fns: AngularFireFunctions,
+    private editorHelper: EditorHelper
   ) {
     // use the FormBuilder to create a form group
     this.articleForm = this.fb.group({
@@ -43,6 +51,39 @@ export class EditorComponent implements OnInit {
         this.articleForm.patchValue(data.article);
       }
     });
+  }
+
+  ngAfterViewInit() {
+    this.editor.quill.getModule('toolbar').addHandler('image', this.imageHandler.bind(this));
+  }
+
+  imageHandler() {
+    const that = this;
+    const input = document.createElement('input');
+    input.setAttribute('type', 'file');
+    input.setAttribute('accept', 'image/*');
+    input.click();
+    const quill = this.editor.quill;
+    input.onchange = async function() {
+      if (input.files.length) {
+        const file = input.files[0];
+        const range = quill.getSelection(true);
+        const fileName = uuid.v4();
+        const storageRef = firebase.storage().ref();
+        const imageRef = storageRef.child(fileName);
+
+        quill.insertEmbed(range.index, 'image', 'assets/img/loading_large.gif');
+        quill.setSelection(range.index + 1);
+
+        imageRef.put(file).then(() => {
+          const lStorageRef = firebase.storage().ref().child(fileName + '_500x500');
+          that.editorHelper.keepTrying(10, lStorageRef).then((url) => {
+            quill.deleteText(range.index, 1);
+            quill.insertEmbed(range.index, 'image', url);
+          });
+        });
+      }
+    };
   }
 
   submitForm() {
@@ -85,5 +126,6 @@ export class EditorComponent implements OnInit {
 
   updateArticle(values: Object) {
     Object.assign(this.article, values);
+    this.article.body = this.editor.quill.root.innerHTML;
   }
 }

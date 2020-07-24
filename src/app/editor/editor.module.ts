@@ -4,6 +4,7 @@ import { EditableArticleResolver } from './editable-article-resolver.service';
 import { SharedModule } from '../shared';
 import { EditorRoutingModule } from './editor-routing.module';
 import { EditorModule as PrimeEditorModule} from 'primeng/editor';
+import { EditorHelper } from '../shared/editor-helper';
 
 @NgModule({
   imports: [
@@ -12,7 +13,9 @@ import { EditorModule as PrimeEditorModule} from 'primeng/editor';
      PrimeEditorModule
     ],
   declarations: [EditorComponent],
-  providers: [EditableArticleResolver],
+  providers: [
+    EditableArticleResolver,
+    EditorHelper],
   exports: [
   ]
 })

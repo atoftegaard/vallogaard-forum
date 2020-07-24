@@ -1,10 +1,8 @@
-import { ModuleWithProviders, NgModule } from '@angular/core';
-import { RouterModule } from '@angular/router';
-
+import { NgModule } from '@angular/core';
 import { SettingsComponent } from './settings.component';
-import { AuthGuard } from '../core';
 import { SharedModule } from '../shared';
 import { SettingsRoutingModule } from './settings-routing.module';
+import { EditorHelper } from '../shared/editor-helper';
 
 @NgModule({
   imports: [
@@ -13,6 +11,10 @@ import { SettingsRoutingModule } from './settings-routing.module';
   ],
   declarations: [
     SettingsComponent
+  ],
+  providers: [
+    EditorHelper
   ]
 })
+
 export class SettingsModule {}

@@ -11,6 +11,7 @@ import * as firebase from 'firebase/app';
 import * as uuid from 'uuid';
 import { DatePipe } from '@angular/common';
 import { Editor } from 'primeng/editor';
+import { EditorHelper } from '../shared/editor-helper';
 
 @Component({
   selector: 'app-article-page',
@@ -22,10 +23,10 @@ import { Editor } from 'primeng/editor';
 export class ArticleComponent implements OnInit, AfterViewInit  {
   @ViewChild(Editor) editor: Editor;
 
-  constructor(@Inject(ActivatedRoute) private route: TypedRoute<ArticleRouteData,
-   ArticleRoutePath>,
+  constructor(@Inject(ActivatedRoute) private route: TypedRoute<ArticleRouteData, ArticleRoutePath>,
     private db: AngularFirestore,
-    private authService: AuthService
+    private authService: AuthService,
+    private editorHelper: EditorHelper
   ) { }
 
   commentContent: string;
@@ -57,7 +58,7 @@ export class ArticleComponent implements OnInit, AfterViewInit  {
 
         imageRef.put(file).then(() => {
           const lStorageRef = firebase.storage().ref().child(fileName + '_500x500');
-          that.keepTrying(10, lStorageRef).then((url) => {
+          that.editorHelper.keepTrying(10, lStorageRef).then((url) => {
             quill.deleteText(range.index, 1);
             quill.insertEmbed(range.index, 'image', url);
           });
@@ -66,35 +67,9 @@ export class ArticleComponent implements OnInit, AfterViewInit  {
     };
   }
 
-  delay(t, v) {
-    return new Promise(function(resolve) {
-      setTimeout(resolve.bind(null, v), t);
-    });
-  }
-
-  keepTrying(triesRemaining, storageRef) {
-    if (triesRemaining < 0) {
-      return Promise.reject('out of tries');
-    }
-
-    return storageRef.getDownloadURL().then((url) => {
-      return url;
-    }).catch((error) => {
-      switch (error.code) {
-        case 'storage/object-not-found':
-          return this.delay(2000, this).then(() => {
-            return this.keepTrying(triesRemaining - 1, storageRef);
-          });
-        default:
-          console.log(error);
-          return Promise.reject(error);
-      }
-    });
-  }
-
   ngOnInit() {
     this.article = this.route.snapshot.data.article;
-    this.comments = this.db.collection<Comment>('comments', ref => ref.orderBy('createdAt', 'asc')
+    this.comments = this.db.collection<Comment>('comments', ref => ref.orderBy('createdAt', 'desc')
       .where('slug', '==', this.route.snapshot.params.slug)).valueChanges();
   }
 

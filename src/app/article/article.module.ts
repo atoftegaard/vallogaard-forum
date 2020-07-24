@@ -5,6 +5,7 @@ import { MarkdownPipe } from './markdown.pipe';
 import { SharedModule } from '../shared';
 import { ArticleRoutingModule } from './article-routing.module';
 import { EditorModule } from 'primeng/editor';
+import { EditorHelper } from '../shared/editor-helper';
 
 @NgModule({
   imports: [
@@ -16,6 +17,9 @@ import { EditorModule } from 'primeng/editor';
     ArticleComponent,
     ArticleCommentComponent,
     MarkdownPipe
+  ],
+  providers: [
+    EditorHelper
   ],
   exports: [
   ]

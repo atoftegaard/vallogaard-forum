@@ -12,26 +12,30 @@ import { first, map } from 'rxjs/operators';
 export  class  AuthService {
   user: User;
   profile: Profile;
+  isAdminPromise: Promise<boolean>;
   constructor(
     public afAuth: AngularFireAuth,
     public router: Router,
     private db: AngularFirestore
   ) {
-    this.afAuth.authState.subscribe(user => {
-      if (user) {
-        this.user = user;
-        this.updateProfile();
-        localStorage.setItem('user', JSON.stringify(this.user));
-      } else {
-        localStorage.setItem('user', null);
-      }
+    this.isAdminPromise = new Promise<boolean>((resolve) => {
+      this.afAuth.authState.subscribe(user => {
+        if (user) {
+          this.user = user;
+          this.updateProfile(resolve);
+          localStorage.setItem('user', JSON.stringify(this.user));
+        } else {
+          localStorage.setItem('user', null);
+        }
+      });
     });
   }
 
-  updateProfile() {
+  updateProfile(resolve: any) {
     const collection = this.db.collection<Profile>('profiles', ref => ref.where('uid', '==', this.user.uid));
     collection.valueChanges().pipe(first(), map(x => x[0])).subscribe(u => {
       this.profile = u;
+      resolve(u.role == 'admin');
     });
   }
 
@@ -55,6 +59,10 @@ export  class  AuthService {
   get isLoggedIn(): boolean {
     const user = JSON.parse(localStorage.getItem('user'));
     return user !==  null;
+  }
+
+  get isAdmin(): Promise<boolean> {
+    return this.isAdminPromise;
   }
 
   get uid(): string {

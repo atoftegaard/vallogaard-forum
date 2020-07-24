@@ -19,6 +19,7 @@ export class ReferaterListComponent implements OnInit {
 
   referater: Observable<Referat[]>;
   loading: boolean;
+  isAdmin: boolean;
 
   @Input() limit: number;
   @Input()
@@ -26,13 +27,16 @@ export class ReferaterListComponent implements OnInit {
 
   ngOnInit(): void {
     this.loading = true;
+    this.authService.isAdmin.then((isAdmin) => {
+      this.isAdmin = isAdmin;
+    });
 
     if (!this.authService.isLoggedIn) {
       this.router.navigate(['/login']);
       return;
     }
 
-    this.referater = this.db.collection<Referat>('referater', ref => ref.orderBy('from', 'asc')).valueChanges();
+    this.referater = this.db.collection<Referat>('referater', ref => ref.orderBy('from', 'desc')).valueChanges();
     this.referater.subscribe(x => {
       this.loading = false;
     });

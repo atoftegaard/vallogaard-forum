@@ -8,7 +8,9 @@ import { SettingsRouteData } from './settings-route-data';
 import { SettingsRoutePath } from './settings-route-path';
 import { AuthService } from '../auth/auth.service';
 import { first, map } from 'rxjs/operators';
-import { ImageService } from '../core/services/settings-file-upload.service';
+import * as uuid from 'uuid';
+import * as firebase from 'firebase/app';
+import { EditorHelper } from '../shared/editor-helper';
 
 class ImageSnippet {
   constructor(public src: string, public file: File) {}
@@ -24,13 +26,14 @@ export class SettingsComponent implements OnInit {
   settingsForm: FormGroup;
   errors: Object = {};
   isSubmitting = false;
+  isLoadingImage = false;
   selectedFile: ImageSnippet;
 
   constructor(@Inject(ActivatedRoute) private route: TypedRoute<SettingsRouteData, SettingsRoutePath>,
     private db: AngularFirestore,
     private authService: AuthService,
     private fb: FormBuilder,
-    private imageService: ImageService
+    private editorHelper: EditorHelper
   ) {
     this.settingsForm = this.fb.group({
       image: '',
@@ -48,6 +51,7 @@ export class SettingsComponent implements OnInit {
   }
 
   submitForm() {
+    const that = this;
     this.isSubmitting = true;
     this.updateUser(this.settingsForm.value);
 
@@ -56,11 +60,11 @@ export class SettingsComponent implements OnInit {
       const profileId = profile.payload.doc.id;
       const profileRef = this.db.collection('profiles').doc(profileId);
       profileRef.set(this.profile, { merge: true }).then(() => {
-        this.isSubmitting = false;
+        that.isSubmitting = false;
       })
       .catch(function(error) {
         console.error('Error writing document: ', error);
-        this.isSubmitting = false;
+        that.isSubmitting = false;
       });
     });
   }
@@ -73,16 +77,24 @@ export class SettingsComponent implements OnInit {
   }
 
   processFile(imageInput: any) {
+    this.isLoadingImage = true;
     const file: File = imageInput.files[0];
     const reader = new FileReader();
+    const that = this;
 
     reader.addEventListener('load', (event: any) => {
-      this.selectedFile = new ImageSnippet(event.target.result, file);
-      this.imageService.uploadImage(this.selectedFile.file).subscribe((url) => {
-        this.profile.image = url;
-        this.authService.updateProfile();
-       }, (err) => { console.error(err); });
-      // todo, oprydning hvis billeder ændres.
+      const fileName = uuid.v4();
+      const storageRef = firebase.storage().ref();
+      const imageRef = storageRef.child(fileName);
+
+      imageRef.put(file).then(() => {
+        const lStorageRef = firebase.storage().ref().child(fileName + '_500x500');
+        that.editorHelper.keepTrying(10, lStorageRef).then((url) => {
+          this.profile.image = url;
+          this.authService.updateProfile();
+          this.isLoadingImage = false;
+        });
+      });
     });
 
     reader.readAsDataURL(file);

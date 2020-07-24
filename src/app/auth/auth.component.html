@@ -8,36 +8,38 @@
         <form [formGroup]="authForm" (ngSubmit)="submitForm()">
           <fieldset [disabled]="isSubmitting">
             <fieldset class="form-group">
+              <span>Emailadresse</span>
               <input
                 formControlName="email"
                 placeholder="Angiv din emailadresse her"
                 class="form-control form-control-lg"
                 type="text" />
             </fieldset>
-            <fieldset class="form-group">
+            <fieldset class="form-group" *ngIf="authType == 'register'" >
+              <span>Navn</span>
               <input
                 formControlName="username"
                 placeholder="Angiv dit fulde navn her"
                 class="form-control form-control-lg"
-                type="text"
-                *ngIf="authType == 'register'" />
+                type="text"/>
             </fieldset>
-            <fieldset class="form-group">
+            <fieldset class="form-group" *ngIf="authType == 'register'">
+              <span>Adresse</span>
               <input
                 formControlName="address"
                 placeholder="Angiv din adresse her"
                 class="form-control form-control-lg"
-                type="text"
-                *ngIf="authType == 'register'" />
+                type="text" />
             </fieldset>
-            <fieldset class="form-group">
+            <fieldset class="form-group" *ngIf="authType != 'register'" >
+              <span>Kodeord</span>
               <input
                 formControlName="password"
                 placeholder="Angiv dit kodeord her"
                 class="form-control form-control-lg"
-                type="password"
-                *ngIf="authType != 'register'" />
+                type="password"/>
             </fieldset>
+            <p style="color:#373a3c;">Hvis det er første gang du besøger denne side, skal du først anmode om adgang.</p>
             <button class="btn btn-xs btn-primary pull-xs-right" [disabled]="!authForm.valid || isSubmitting" type="submit">
               {{ title }}
             </button>
