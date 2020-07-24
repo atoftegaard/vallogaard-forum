@@ -35,7 +35,7 @@ export  class  AuthService {
     const collection = this.db.collection<Profile>('profiles', ref => ref.where('uid', '==', this.user.uid));
     collection.valueChanges().pipe(first(), map(x => x[0])).subscribe(u => {
       this.profile = u;
-      resolve(u.role == 'admin');
+      resolve(u.role === 'admin');
     });
   }
 
