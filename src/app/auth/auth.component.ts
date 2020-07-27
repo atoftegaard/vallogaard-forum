@@ -79,11 +79,11 @@ export class AuthComponent implements OnInit {
       'name': name,
       'email': email,
       'address': address
-    }).toPromise().then(res=>{
+    }).toPromise().then(res => {
       this.applied = true;
       this.isSubmitting = false;
     })
-    .catch(er=>{
+    .catch(er => {
       console.log(er);
       this.isSubmitting = false;
     });
