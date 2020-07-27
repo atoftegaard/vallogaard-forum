@@ -68,7 +68,7 @@ exports.applyForUser = functions.https.onRequest((req: any, res: any) => {
                         console.log('sendMail error', error.toString());
                         return res.status(500).send(error.toString());
                     }
-                    return res.status(200).send();
+                    return res.status(200).send({ data: 'OK' });
                 });
               })
               .catch((error: any) => {
@@ -77,6 +77,7 @@ exports.applyForUser = functions.https.onRequest((req: any, res: any) => {
               });
         }).catch((error: any) => {
             console.log('Error creating new user:', error);
+            return res.status(500).send(error.toString());
         });
     });    
 });
@@ -121,7 +122,7 @@ exports.notifyNewArticle = functions.https.onRequest((req: any, res: any) => {
                         console.log('sendMail error', error.toString());
                         return res.status(500).send(error.toString());
                     }
-                    return res.status(200).send();
+                    return res.status(200).send({ data: 'OK' });
                 });
             });
         });

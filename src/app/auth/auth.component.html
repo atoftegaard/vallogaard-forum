@@ -41,7 +41,7 @@
             </fieldset>
             <p style="color:#373a3c;">Hvis det er første gang du besøger denne side, skal du først anmode om adgang.</p>
             <button class="btn btn-xs btn-primary pull-xs-right" [disabled]="!authForm.valid || isSubmitting" type="submit">
-              {{ title }}
+              <span>{{ title }}</span> <img src="assets/img/loading_large.gif" style="margin-left: 1em; height: 16px; width: 16px;" *ngIf="isSubmitting" />
             </button>
             <p class="text-xs-center">
               <a [routerLink]="['/login']" *ngIf="authType == 'register'" class="btn btn-xs btn-info pull-xs-left authnav">Tilbage</a>

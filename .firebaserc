@@ -1,12 +1,20 @@
 {
   "projects": {
-    "default": "vallogaard-2019"
+    "default": "vallogaard-2019",
+    "test": "vallogaard-test"
   },
   "targets": {
     "vallogaard-2019": {
       "hosting": {
         "vallogaard": [
           "vallogaard-2019"
+        ]
+      }
+    },
+    "vallogaard-test": {
+      "hosting": {
+        "vallogaard": [
+          "vallogaard-test"
         ]
       }
     }

@@ -68,9 +68,8 @@ export class AuthComponent implements OnInit {
   }
 
   applyForUser() {
+    this.isSubmitting = true;
     this.sendApplicationNotification(this.authForm.value.username, this.authForm.value.email, this.authForm.value.address);
-    this.applied = true;
-    this.isSubmitting = false;
   }
 
   sendApplicationNotification(name: string, email: string, address: string) {
@@ -80,6 +79,13 @@ export class AuthComponent implements OnInit {
       'name': name,
       'email': email,
       'address': address
+    }).toPromise().then(res=>{
+      this.applied = true;
+      this.isSubmitting = false;
+    })
+    .catch(er=>{
+      console.log(er);
+      this.isSubmitting = false;
     });
   }
 }
