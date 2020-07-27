@@ -31,7 +31,7 @@ exports.applyForUser = functions.https.onRequest((req: any, res: any) => {
         const name = req.body.data.name;
         const email = req.body.data.email;
         const address = req.body.data.address;
-        const image = 'https://api.adorable.io/avatars/40/' + name + '.png';
+        const image = 'https://api.adorable.io/avatars/40/' + name.replace(/\s+/g, '') + '.png';
 
         admin.auth().createUser({
             email: email,
