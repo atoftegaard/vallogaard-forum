@@ -69,7 +69,9 @@ export class AuthComponent implements OnInit {
 
   applyForUser() {
     this.isSubmitting = true;
-    this.sendApplicationNotification(this.authForm.value.username.trim(), this.authForm.value.email.trim(), this.authForm.value.address.trim());
+    this.sendApplicationNotification(this.authForm.value.username.trim(),
+      this.authForm.value.email.trim(),
+      this.authForm.value.address.trim());
   }
 
   sendApplicationNotification(name: string, email: string, address: string) {
