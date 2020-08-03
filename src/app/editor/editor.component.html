@@ -1,4 +1,17 @@
 <div class="editor-page">
+  <div class="banner">
+    <div class="container">
+      <h1 class="logo-font">Nyt opslag</h1>
+      <div class="article-meta">
+          <div class="info">
+              <span class="author"></span>
+              <span class="date"></span>
+              <span class="date" style="padding-top: 5px;"></span>
+          </div>
+        </div>              
+    </div>
+  </div>
+
   <div class="container page">
     <div class="row">
       <div class="col-md-10 offset-md-1 col-xs-12">
@@ -46,6 +59,8 @@
                 </p-header>
               </p-editor>
             </fieldset>
+
+            <p>Når du laver et nyt opslag notificeres forummets brugere om dit opslag, hvis de har tilladt notifikationer.</p>
 
             <button class="btn btn-lg pull-xs-right btn-primary" type="button" (click)="submitForm()"
               [disabled]="!articleForm.valid || isSubmitting">
