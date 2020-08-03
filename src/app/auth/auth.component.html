@@ -2,62 +2,76 @@
   <div class="container page">
     <div class="row">
 
-      <div class="col-md-8 offset-md-2 col-xs-12" [hidden]="applied">
-        <h1 class="text-xs-center">{{ title }}</h1>
-        <app-list-errors [errors]="errors"></app-list-errors>
-        <form [formGroup]="authForm" (ngSubmit)="submitForm()">
-          <fieldset [disabled]="isSubmitting">
-            <fieldset class="form-group">
-              <span>Emailadresse</span>
-              <input
-                formControlName="email"
-                placeholder="Angiv din emailadresse her"
-                class="form-control form-control-lg"
-                type="text" />
-            </fieldset>
-            <fieldset class="form-group" *ngIf="authType == 'register'" >
-              <span>Navn</span>
-              <input
-                formControlName="username"
-                placeholder="Angiv dit fulde navn her"
-                class="form-control form-control-lg"
-                type="text"/>
-            </fieldset>
-            <fieldset class="form-group" *ngIf="authType == 'register'">
-              <span>Adresse</span>
-              <input
-                formControlName="address"
-                placeholder="Angiv din adresse her"
-                class="form-control form-control-lg"
-                type="text" />
-            </fieldset>
-            <fieldset class="form-group" *ngIf="authType != 'register'" >
-              <span>Kodeord</span>
-              <input
-                formControlName="password"
-                placeholder="Angiv dit kodeord her"
-                class="form-control form-control-lg"
-                type="password"/>
-            </fieldset>
-            <p style="color:#373a3c;">Hvis det er første gang du besøger denne side, skal du først anmode om adgang.</p>
-            <button class="btn btn-xs btn-primary pull-xs-right" [disabled]="!authForm.valid || isSubmitting" type="submit">
-              <span>{{ title }}</span> <img src="assets/img/loading_large.gif" style="margin-left: 1em; height: 16px; width: 16px;" *ngIf="isSubmitting" />
-            </button>
-            <p class="text-xs-center">
-              <a [routerLink]="['/login']" *ngIf="authType == 'register'" class="btn btn-xs btn-info pull-xs-left authnav">Tilbage</a>
-              <a [routerLink]="['/register']" *ngIf="authType == 'login'" class="btn btn-xs btn-info pull-xs-left authnav">Anmod om adgang</a>
-            </p>
-          </fieldset>
-          <div *ngIf="loginError" class="text-danger pull-xs-right">Forkerte log ind-oplysninger, forsøg igen.</div>
-        </form>
-      </div>
-
       <div class="col-md-6 offset-md-3 col-xs-12" [hidden]="!applied">
         <h1 class="text-xs-center">Anmodningen blev sendt</h1>
         <p class="text-xs-center">
-          Da dette er et lukket forum, skal alle anmodninger godkendes manuelt, inden log ind er muligt. Du vil modtage en e-mail med yderligere informationer, såfremt din anmodning godkendes.
+          Da dette er et lukket forum, skal alle anmodninger godkendes manuelt, inden log ind er muligt. Du vil modtage en email med yderligere informationer, såfremt din anmodning godkendes.
         </p>
-        
+      </div>
+
+      <div class="col-md-6 offset-md-3 col-xs-12" [hidden]="!resetComplete">
+        <h1 class="text-xs-center">Nulstillings-email afsendt</h1>
+        <p class="text-xs-center">
+          Hvis din angivne emailadresse kunne findes, er der nu blevet afsendt en email med yderligere information om nulstilling af kodeord. Der kan gå nogle få minutter inden den kommer, check dit spamfilter hvis den ikke modtages.
+        </p>
+      </div>
+
+      <div class="col-md-8 offset-md-2 col-xs-12">
+        <form [formGroup]="authForm" (ngSubmit)="submitForm()">
+          <h1 class="text-xs-center" [hidden]="applied || resetComplete">{{ title }}</h1>
+          <app-list-errors [errors]="errors"></app-list-errors>
+            <fieldset [disabled]="isSubmitting">
+              <div [hidden]="applied || resetComplete">
+                <fieldset class="form-group">
+                  <span>Emailadresse</span>
+                  <input
+                    formControlName="email"
+                    placeholder="Angiv din emailadresse her"
+                    class="form-control form-control-lg"
+                    type="text" />
+                </fieldset>
+                <fieldset class="form-group" *ngIf="authType == 'register'" >
+                  <span>Navn</span>
+                  <input
+                    formControlName="username"
+                    placeholder="Angiv dit fulde navn her"
+                    class="form-control form-control-lg"
+                    type="text"/>
+                </fieldset>
+                <fieldset class="form-group" *ngIf="authType == 'register'">
+                  <span>Adresse</span>
+                  <input
+                    formControlName="address"
+                    placeholder="Angiv din adresse her"
+                    class="form-control form-control-lg"
+                    type="text" />
+                </fieldset>
+                <fieldset class="form-group" *ngIf="authType == 'login'" >
+                  <span>Kodeord</span>
+                  <input
+                    formControlName="password"
+                    placeholder="Angiv dit kodeord her"
+                    class="form-control form-control-lg"
+                    type="password"/>
+                </fieldset>
+                <p *ngIf="authType == 'login'" style="color:#373a3c;">Hvis det er første gang du besøger denne side, skal du først anmode om adgang.</p>
+                <p *ngIf="authType == 'reset'" style="color:#373a3c;">Indtast den emailadresse du er oprettet med, i feltet ovenfor. <br>Når du efterfølgende trykker på knappen 'Nulstil kodeord', vil du på email modtage instrukser til angivelse af et nyt kodeord.</p>
+                <p>
+                  <a [routerLink]="['/reset']" *ngIf="authType == 'login'" style="color: #373a3c">
+                    Klik her, hvis du har glemt dit kodeord
+                  </a>
+                </p>
+              </div>
+              <button class="btn btn-xs btn-primary pull-xs-right" [disabled]="!authForm.valid || isSubmitting" type="submit" [hidden]="applied || resetComplete">
+                <span>{{ title }}</span> <img src="assets/img/loading_large.gif" style="margin-left: 1em; height: 16px; width: 16px;" *ngIf="isSubmitting" />
+              </button>
+              <p class="text-xs-center">
+                <a [routerLink]="['/login']" *ngIf="authType != 'login'" class="btn btn-xs btn-info pull-xs-left authnav">Tilbage</a>
+                <a [routerLink]="['/register']" *ngIf="authType == 'login'" class="btn btn-xs btn-info pull-xs-left authnav">Anmod om adgang</a>
+              </p>
+            </fieldset>
+          <div *ngIf="loginError" class="text-danger pull-xs-right">Forkerte log ind-oplysninger, forsøg igen.</div>
+        </form>
       </div>
 
     </div>

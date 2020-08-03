@@ -15,6 +15,7 @@ export class AuthComponent implements OnInit {
   title: String = '';
   errors: Errors = {errors: {}};
   isSubmitting = false;
+  resetComplete = false;
   loginError = false;
   applied = false;
   authForm: FormGroup;
@@ -22,7 +23,7 @@ export class AuthComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private fb: FormBuilder,
-    private authService:  AuthService,
+    private authService: AuthService,
     private fns: AngularFireFunctions,
     private renderer: Renderer2,
     @Inject(DOCUMENT) private document: Document
@@ -38,8 +39,16 @@ export class AuthComponent implements OnInit {
       this.renderer.addClass(this.document.body, 'body-bg');
       // Get the last piece of the URL (it's either 'login' or 'register')
       this.authType = data[data.length - 1].path;
-      // Set a title for the page accordingly
-      this.title = (this.authType === 'login') ? 'LOG IND' : 'ANMOD';
+
+      if (this.authType === 'login') {
+        this.title = 'LOG IND';
+      }
+      if (this.authType === 'register') {
+        this.title = 'ANMOD';
+      }
+      if (this.authType === 'reset') {
+        this.title = 'NULSTIL KODEORD';
+      }
       // add form control for username if this is the register page
       if (this.authType === 'register') {
         this.authForm.addControl('username', new FormControl());
@@ -53,6 +62,13 @@ export class AuthComponent implements OnInit {
   submitForm() {
     if (this.authType === 'register') {
       this.applyForUser();
+    } else if (this.authType === 'reset') {
+      this.loginError = false;
+      this.isSubmitting = true;
+      this.authService.reset(this.authForm.value.email).then(x => {
+        this.isSubmitting = false;
+        this.resetComplete = true;
+      });
     } else {
       this.loginError = false;
       this.isSubmitting = true;

@@ -54,6 +54,10 @@ export  class  AuthService {
     }
   }
 
+  async reset(email: string) {
+    this.afAuth.sendPasswordResetEmail(email);
+  }
+
   async logout() {
     await this.afAuth.signOut();
     localStorage.removeItem('user');
