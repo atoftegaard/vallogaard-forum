@@ -7,6 +7,10 @@ const routes: Routes = [
     loadChildren: () => import('./settings/settings.module').then(m => m.SettingsModule)
   },
   {
+    path: 'brugere',
+    loadChildren: () => import('./brugere/brugere.module').then(m => m.BrugereModule)
+  },
+  {
     path: 'profile',
     loadChildren: () => import('./profile/profile.module').then(m => m.ProfileModule)
   },

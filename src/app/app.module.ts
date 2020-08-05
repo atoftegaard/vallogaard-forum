@@ -18,6 +18,7 @@ import localeDa from '@angular/common/locales/da';
 import { ReferaterListComponent } from './referater-list/referater-list.component';
 import { ReferatPreviewComponent } from './referat-preview/referat-preview.component';
 import { ReferatUploadComponent } from './referat-upload/referat-upload.component';
+import { BrugereListComponent } from './brugere-list/brugere-list.component';
 
 registerLocaleData(localeDa);
 
@@ -38,7 +39,7 @@ const cookieConfig: NgcCookieConsentConfig = {
 };
 
 @NgModule({
-  declarations: [AppComponent, FooterComponent, HeaderComponent, ReferaterListComponent, ReferatPreviewComponent, ReferatUploadComponent],
+  declarations: [AppComponent, FooterComponent, HeaderComponent, ReferaterListComponent, ReferatPreviewComponent, ReferatUploadComponent, BrugereListComponent],
   imports: [
     BrowserModule,
     EditorModule,
