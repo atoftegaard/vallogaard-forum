@@ -82,7 +82,7 @@ export class ArticleComponent implements OnInit, AfterViewInit  {
             image: this.authService.profile.image
         } as SimpleProfile;
         this.db.collection<Article>('articles').doc(this.article.slug)
-        .update({ 
+        .update({
           views: this.article.views
         });
       }
@@ -111,7 +111,7 @@ export class ArticleComponent implements OnInit, AfterViewInit  {
         } as SimpleProfile);
         that.commentContent = '';
         that.db.collection<Article>('articles').doc(that.article.slug)
-          .update({ 
+          .update({
             updatedAt: new Date(),
             comments: that.article.comments
           }).then(x => {
