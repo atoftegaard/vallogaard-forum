@@ -1,4 +1,4 @@
-<div class="article-meta">
+<div class="article-meta {{ bg ? 'bg' : '' }}">
   <img [src]="article.author.image" />
 
   <div class="info">
@@ -8,9 +8,25 @@
     <span class="date">
       {{ article.author.address }}
     </span>
-    <span class="date" style="padding-top: 5px;">
-      {{ toLongDate(article.createdAt) }}
+    <span class="date">
+      Oprettet d. {{ toLongDate(article.createdAt) }}
     </span>
     <i *ngIf="showSticky && article.sticky" class="ion-star sticky date" style="padding-top: 5px;"> Dette opslag fremhæves på forsiden</i>
+  </div>
+
+  <div class="info" *ngIf="!showSticky">
+    <span class="date" style="margin-top: 1em">
+      Set af <i>{{ articleCount() }}</i> {{ articleCount() === 1 ? 'person' : 'personer' }}
+    </span>
+    <span class="date">
+      {{ article.comments?.length || 'Ingen' }} {{ article.comments?.length === 1 ? 'kommentar' : 'kommentarer' }}
+    </span>
+  </div>
+
+  <div class="info" *ngIf="!showSticky">
+    <span class="date" *ngIf="article.comments?.length > 0" style="margin-top: 2.1em">
+      Nyeste kommentar d. {{ toLongDate(article.updatedAt) }}
+    </span>
+    <img *ngFor="let c of uniques(article.comments)" [src]="c.image" class="img-small" [title]="c.name" />
   </div>
 </div>

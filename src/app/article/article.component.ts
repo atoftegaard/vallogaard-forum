@@ -12,6 +12,8 @@ import * as uuid from 'uuid';
 import { DatePipe } from '@angular/common';
 import { Editor } from 'primeng/editor';
 import { EditorHelper } from '../shared/editor-helper';
+import { first, map } from 'rxjs/operators';
+import { SimpleProfile } from '../core/models/simple-profile.model';
 
 @Component({
   selector: 'app-article-page',
@@ -68,29 +70,30 @@ export class ArticleComponent implements OnInit, AfterViewInit  {
   }
 
   async ngOnInit() {
-    await this.authService.loggedIn();
-
     this.article = this.route.snapshot.data.article;
     this.comments = this.db.collection<Comment>('comments', ref => ref.orderBy('createdAt', 'desc')
       .where('slug', '==', this.route.snapshot.params.slug)).valueChanges();
+
+    await this.authService.isAdmin.then(x => {
+      if (!this.article.views[this.authService.profile.uid]) {
+        this.article.views[this.authService.profile.uid] = {
+            uid: this.authService.profile.uid,
+            name: this.authService.profile.name,
+            image: this.authService.profile.image
+        } as SimpleProfile;
+        this.db.collection<Article>('articles').doc(this.article.slug)
+        .update({ 
+          views: this.article.views
+        });
+      }
+    });
   }
 
   ngAfterViewInit() {
     this.editor.quill.getModule('toolbar').addHandler('image', this.imageHandler.bind(this));
   }
 
-  deleteArticle() {
-    this.isDeleting = true;
-
-    // this.articlesService.destroy(this.article.slug)
-    //   .subscribe(
-    //     success => {
-    //       this.router.navigateByUrl('/');
-    //     }
-    //   );
-  }
-
-  addComment() {
+  async addComment() {
     this.isSubmitting = true;
     this.commentFormErrors = {};
     const that = this;
@@ -101,22 +104,24 @@ export class ArticleComponent implements OnInit, AfterViewInit  {
         author: this.authService.profile
     })
     .then(function() {
+        that.article.comments.push({
+          uid: that.authService.profile.uid,
+          name: that.authService.profile.name,
+          image: that.authService.profile.image
+        } as SimpleProfile);
         that.commentContent = '';
-        that.isSubmitting = false;
+        that.db.collection<Article>('articles').doc(that.article.slug)
+          .update({ 
+            updatedAt: new Date(),
+            comments: that.article.comments
+          }).then(x => {
+            that.isSubmitting = false;
+          });
     })
     .catch(function(error) {
         console.error('Error writing document: ', error);
         that.isSubmitting = false;
     });
-  }
-
-  onDeleteComment(comment) {
-    // this.commentsService.destroy(comment.id, this.article.slug)
-    //   .subscribe(
-    //     success => {
-    //       this.comments = this.comments.filter((item) => item !== comment);
-    //     }
-    //   );
   }
 
 }

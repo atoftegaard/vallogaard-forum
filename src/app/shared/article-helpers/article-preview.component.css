@@ -1,5 +1,5 @@
 .article-preview {
-    padding: 1.5rem 1em;
+    padding: 1.5rem 1em 0.7rem 1em;
     border: 1px lightgrey solid;
     border-radius: 0.3rem;
     margin-bottom: 1.5em;
@@ -16,7 +16,5 @@
 }
 
 .sticky {
-    float: right;
-    font-size: 2.5em;
-    color: #5db85b;
+    border-color: #5db85b;
 }

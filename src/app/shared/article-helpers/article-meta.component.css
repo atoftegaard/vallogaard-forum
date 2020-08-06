@@ -1,9 +1,20 @@
 .article-meta {
     margin: 1em 0 0 0;
+    padding: 1em;
+    border-radius: 0.3rem;
 }
 
 .article-meta img {
     width: 50px;
     height: 50px;
     margin-right: 1em;
+}
+
+.img-small {
+    width: 30px !important;
+    height: 30px !important;
+}
+
+.bg {
+    background-color: #f7f7f7;
 }

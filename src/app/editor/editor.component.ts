@@ -11,6 +11,7 @@ import * as uuid from 'uuid';
 import { EditorHelper } from '../shared/editor-helper';
 import * as firebase from 'firebase/app';
 import * as slug from 'slug';
+import { SimpleProfile } from '../core/models/simple-profile.model';
 
 @Component({
   selector: 'app-editor-page',
@@ -98,6 +99,7 @@ export class EditorComponent implements OnInit, AfterViewInit {
     // update the model
     this.articleForm.value.slug = slug(this.articleForm.value.title);
     this.articleForm.value.createdAt = new Date();
+    this.articleForm.value.updatedAt = new Date();
     this.updateArticle(this.articleForm.value);
     this.article.author = this.authService.profile;
     const that = this;
@@ -131,6 +133,8 @@ export class EditorComponent implements OnInit, AfterViewInit {
 
   updateArticle(values: Object) {
     Object.assign(this.article, values);
+    this.article.comments = [];
+    this.article.views = {} as Map<string, SimpleProfile>;
     this.article.body = this.editor.quill.root.innerHTML;
   }
 }
