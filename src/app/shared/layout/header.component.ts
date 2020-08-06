@@ -14,6 +14,7 @@ export class HeaderComponent implements OnInit {
   ) {}
 
   currentUser: Profile;
+  isAdmin: boolean;
 
   ngOnInit() {
     this.userService.currentUser.subscribe(
@@ -21,5 +22,9 @@ export class HeaderComponent implements OnInit {
         this.currentUser = userData;
       }
     );
+
+    this.authService.isAdmin.then((isAdmin) => {
+      this.isAdmin = isAdmin;
+    });
   }
 }

@@ -10,6 +10,7 @@ import { Article } from '../../core';
 })
 export class ArticleMetaComponent {
   @Input() article: Article;
+  @Input() showSticky: boolean;
 
   constructor(private datePipe: DatePipe) {}
 

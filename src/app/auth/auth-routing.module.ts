@@ -13,6 +13,11 @@ const routes: Routes = [
     path: 'register',
     component: AuthComponent,
     canActivate: [NoAuthGuard]
+  },
+  {
+    path: 'reset',
+    component: AuthComponent,
+    canActivate: [NoAuthGuard]
   }
 ];
 
