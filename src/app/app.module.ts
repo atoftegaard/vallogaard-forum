@@ -39,7 +39,13 @@ const cookieConfig: NgcCookieConsentConfig = {
 };
 
 @NgModule({
-  declarations: [AppComponent, FooterComponent, HeaderComponent, ReferaterListComponent, ReferatPreviewComponent, ReferatUploadComponent, BrugereListComponent],
+  declarations: [AppComponent,
+     FooterComponent,
+      HeaderComponent,
+       ReferaterListComponent,
+        ReferatPreviewComponent,
+         ReferatUploadComponent,
+          BrugereListComponent],
   imports: [
     BrowserModule,
     EditorModule,

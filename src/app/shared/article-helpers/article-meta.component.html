@@ -11,6 +11,6 @@
     <span class="date" style="padding-top: 5px;">
       {{ toLongDate(article.createdAt) }}
     </span>
+    <i *ngIf="showSticky && article.sticky" class="ion-star sticky date" style="padding-top: 5px;"> Dette opslag fremhæves på forsiden</i>
   </div>
-
 </div>

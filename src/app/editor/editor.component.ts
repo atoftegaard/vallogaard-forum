@@ -25,6 +25,7 @@ export class EditorComponent implements OnInit, AfterViewInit {
   tagField = new FormControl();
   error: string;
   isSubmitting = false;
+  isAdmin = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -38,12 +39,18 @@ export class EditorComponent implements OnInit, AfterViewInit {
     // use the FormBuilder to create a form group
     this.articleForm = this.fb.group({
       title: '',
-      body: ''
+      body: '',
+      sticky: false
     });
   }
 
-  ngOnInit() {
-    // If there's an article prefetched, load it
+  async ngOnInit() {
+    await this.authService.loggedIn();
+
+    this.authService.isAdmin.then((isAdmin) => {
+      this.isAdmin = isAdmin;
+    });
+
     this.route.data.subscribe((data: { article: Article }) => {
       if (data.article) {
         this.article = data.article;

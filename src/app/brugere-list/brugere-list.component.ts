@@ -20,7 +20,7 @@ export class BrugereListComponent implements OnInit {
 
   brugere: Observable<Profile[]>;
   loading: boolean;
-  allEmails: string = '';
+  allEmails: string;
 
   @Input() limit: number;
   @Input()

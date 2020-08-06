@@ -58,6 +58,16 @@
                   </span>
                 </p-header>
               </p-editor>
+
+              <fieldset class="form-group" *ngIf="isAdmin" style="margin-top: 1em">
+                <label>
+                <input class="form-control-lg form-control-inline"
+                  type="checkbox"
+                  formControlName="sticky" />
+                  Opslaget låses til toppen af forsiden
+                </label>
+              </fieldset>
+
             </fieldset>
 
             <p>Når du laver et nyt opslag notificeres forummets brugere om dit opslag, hvis de har tilladt notifikationer.</p>
