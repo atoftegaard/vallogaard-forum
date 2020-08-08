@@ -4,13 +4,11 @@
     <div class="container">
       <h1>{{ article?.title }}</h1>
       <app-article-meta [article]="article" [showSticky]="true">
-
           <span [hidden]="!canModify">
           <a class="btn btn-sm btn-outline-secondary"
              [routerLink]="['/editor', article.slug]">
             <i class="ion-edit"></i> Edit Article
           </a>
-
         </span>
       </app-article-meta>
     </div>

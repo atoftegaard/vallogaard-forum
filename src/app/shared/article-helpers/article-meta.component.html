@@ -1,4 +1,10 @@
 <div class="article-meta {{ bg ? 'bg' : '' }}">
+  <div>
+    <button class="btn btn-sm btn-secondary" (click)="copyUrl()" type="button" style="float: right;" *ngIf="showSticky">
+      <i class="ion-clipboard" style="font-size: 1.5em;" title="Kopier link til opslaget"></i>
+    </button>
+  </div>
+
   <img [src]="article.author.image" />
 
   <div class="info">
