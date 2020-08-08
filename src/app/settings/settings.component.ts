@@ -42,7 +42,8 @@ export class SettingsComponent implements OnInit {
       email: '',
       password: '',
       notifyAboutNewArticles: '',
-      notifyAboutNewComments: ''
+      notifyAboutNewComments: '',
+      shareEmail: ''
     });
   }
 
@@ -79,6 +80,7 @@ export class SettingsComponent implements OnInit {
     this.profile.email = values.email;
     this.profile.notifyAboutNewArticles = values.notifyAboutNewArticles;
     this.profile.notifyAboutNewComments = values.notifyAboutNewComments;
+    this.profile.shareEmail = values.shareEmail;
   }
 
   processFile(imageInput: any) {

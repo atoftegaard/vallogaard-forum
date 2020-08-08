@@ -50,6 +50,7 @@ exports.applyForUser = functions.https.onRequest((req: any, res: any) => {
                 'image': image,
                 'notifyAboutNewArticles': true,
                 'notifyAboutNewComments': true,
+                'shareEmail': true,
                 'uid': userRecord.uid,
                 'role': 'user'
               })

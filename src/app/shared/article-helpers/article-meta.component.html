@@ -2,7 +2,10 @@
   <img [src]="article.author.image" />
 
   <div class="info">
-    <span class="author">
+    <span class="author" *ngIf="article.author.shareEmail">
+      Af <a href="mailto:{{article.author.email}}" style="color:white">{{ article.author.name }}</a>
+    </span>
+    <span class="author" *ngIf="!article.author.shareEmail">
       Af {{ article.author.name }}
     </span>
     <span class="date">
