@@ -1,5 +1,4 @@
 import { Profile } from './profile.model';
-import { Timestamp } from '@google-cloud/firestore';
 import { SimpleProfile } from './simple-profile.model';
 
 export interface Article {
@@ -13,4 +12,5 @@ export interface Article {
   sticky: boolean;
   comments: SimpleProfile[];
   views: Map<string, SimpleProfile>;
+  watchers: Map<string, SimpleProfile>;
 }

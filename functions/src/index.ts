@@ -1,6 +1,7 @@
 import * as functions from 'firebase-functions';
 import { environment } from '../../src/environments/environment';
 import { Profile } from '../../src/app/core/models/profile.model';
+import { Article } from '../../src/app/core/models/article.model';
 
 const admin = require('firebase-admin');
 const nodemailer = require('nodemailer');
@@ -112,10 +113,10 @@ exports.notifyNewArticle = functions.https.onRequest((req: any, res: any) => {
                     return;
                 }
                 const mailOptions = {
-                    from: 'Valløgård Forum <andreas@toftegaard.it>',
+                    from: 'Valløgård Forum <noreply@vallogaard.dk>',
                     to: profile.email,
                     subject: 'Nyt opslag fra ' +  authorname,
-                    html: `<p>Hej ${profile.name}</p><p>${authorname} har lavet <a href="${articleurl}">opslaget ${articlename}, klik her for at se det.</a></p>`
+                    html: `<p>Hej ${profile.name}</p><p>${authorname} har lavet opslaget <a href="${articleurl}">${articlename}, klik her for at se det.</a></p>`
                 };
         
                 return transporter.sendMail(mailOptions, (error: any) => {
@@ -124,6 +125,75 @@ exports.notifyNewArticle = functions.https.onRequest((req: any, res: any) => {
                         return res.status(500).send(error.toString());
                     }
                     return res.status(200).send({ data: 'OK' });
+                });
+            });
+        });
+    });    
+});
+
+exports.notifyWatchers = functions.https.onRequest((req: any, res: any) => {
+    return cors(req, res, () => {
+        
+        res.set('Access-Control-Allow-Origin', "*");
+        res.set('Access-Control-Allow-Methods', 'GET, POST');
+
+        const articleSlug = req.body.data.articleSlug;
+        const commentorUid = req.body.data.commentorUid;
+        const articleUrl = req.body.data.articleUrl;
+        const commentorName = req.body.data.commentorName;
+
+        if(req.method !== 'POST'){
+            res.status(400).send('Please send a POST request');
+            return;
+        }
+ 
+        console.log('notifyWatchers called with body', JSON.stringify(req.body));
+        
+        admin.firestore().collection('articles')
+        .get(articleSlug).then((aDoc: any) => {
+            if (aDoc.exists) {
+                console.log('article not found');
+                return;
+            }
+
+            aDoc.forEach((articleDoc: any) => {
+                const article = articleDoc.data() as Article;
+                
+                admin.firestore().collection('profiles', (ref: any) => ref.where('notifyAboutNewComments', '==', true)).get()
+                .then((snap: any) => {
+                    if (snap.empty) {
+                        return;
+                    }
+
+                    snap.forEach((doc: any) => {
+                        const profile = doc.data() as Profile;
+                        if (profile.uid === commentorUid) {
+                            return;
+                        }
+
+                        if (!(profile.uid in article.watchers)) {
+                            return;
+                        }
+
+                        const mailOptions = {
+                            from: 'Valløgård Forum <noreply@vallogaard.dk>',
+                            to: profile.email,
+                            subject: 'Ny kommentar på opslaget "' +  article.title + '"',
+                            html: `<p>Hej ${profile.name}</p><p>${commentorName} har skrevet en kommentar 
+                            på opslaget <a href="${articleUrl}">${article.title}, klik her for at se den.</a></p>
+                            <p>Du modtager denne besked fordi du har skrevet en kommentar i samme opslag. 
+                            Hvis du ikke ønsker at notificeres, kan du slå det fra på opslaget ved at trykke 
+                            på "øjet" i toppen af siden - eller du kan redigere dine notifikationsindstillinger.</p>`
+                        };
+                
+                        return transporter.sendMail(mailOptions, (error: any) => {
+                            if(error){
+                                console.log('sendMail error', error.toString());
+                                return res.status(500).send(error.toString());
+                            }
+                            return res.status(200).send({ data: 'OK' });
+                        });
+                    });
                 });
             });
         });

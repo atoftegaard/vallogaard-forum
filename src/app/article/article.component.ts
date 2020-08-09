@@ -12,8 +12,8 @@ import * as uuid from 'uuid';
 import { DatePipe } from '@angular/common';
 import { Editor } from 'primeng/editor';
 import { EditorHelper } from '../shared/editor-helper';
-import { first, map } from 'rxjs/operators';
 import { SimpleProfile } from '../core/models/simple-profile.model';
+import { AngularFireFunctions } from '@angular/fire/functions';
 
 @Component({
   selector: 'app-article-page',
@@ -27,6 +27,7 @@ export class ArticleComponent implements OnInit, AfterViewInit  {
 
   constructor(@Inject(ActivatedRoute) private route: TypedRoute<ArticleRouteData, ArticleRoutePath>,
     private db: AngularFirestore,
+    private fns: AngularFireFunctions,
     private authService: AuthService,
     private editorHelper: EditorHelper
   ) { }
@@ -70,6 +71,8 @@ export class ArticleComponent implements OnInit, AfterViewInit  {
   }
 
   async ngOnInit() {
+    await this.authService.loggedIn();
+
     this.article = this.route.snapshot.data.article;
     this.comments = this.db.collection<Comment>('comments', ref => ref.orderBy('createdAt', 'desc')
       .where('slug', '==', this.route.snapshot.params.slug)).valueChanges();
@@ -93,6 +96,14 @@ export class ArticleComponent implements OnInit, AfterViewInit  {
     this.editor.quill.getModule('toolbar').addHandler('image', this.imageHandler.bind(this));
   }
 
+  watchingAllowed() {
+    if (!this.authService.profile) {
+      return false;
+    } else {
+      return this.authService.profile.notifyAboutNewComments;
+    }
+  }
+
   async addComment() {
     this.isSubmitting = true;
     this.commentFormErrors = {};
@@ -104,16 +115,25 @@ export class ArticleComponent implements OnInit, AfterViewInit  {
         author: this.authService.profile
     })
     .then(function() {
-        that.article.comments.push({
+        that.notifyWatchers(that.article.slug, that.authService.profile.uid, that.authService.profile.name);
+
+        const simpleProfile = {
           uid: that.authService.profile.uid,
           name: that.authService.profile.name,
           image: that.authService.profile.image
-        } as SimpleProfile);
+        } as SimpleProfile;
+
+        that.article.comments.push(simpleProfile);
+        if (that.watchingAllowed()) {
+          that.article.watchers[simpleProfile.uid] = simpleProfile;
+        }
+
         that.commentContent = '';
         that.db.collection<Article>('articles').doc(that.article.slug)
           .update({
             updatedAt: new Date(),
-            comments: that.article.comments
+            comments: that.article.comments,
+            watchers: that.article.watchers
           }).then(x => {
             that.isSubmitting = false;
           });
@@ -124,4 +144,18 @@ export class ArticleComponent implements OnInit, AfterViewInit  {
     });
   }
 
+  async notifyWatchers(slug, commentorUid, commentorName) {
+    const callable = this.fns.httpsCallable('notifyWatchers');
+    callable({
+      'articleSlug': slug,
+      'commentorUid': commentorUid,
+      'commentorName': commentorName,
+      'articleUrl': `${window.location.origin}/article/${slug}`
+    }).toPromise().then(res => {
+
+    })
+    .catch(er => {
+      console.log(er);
+    });
+  }
 }

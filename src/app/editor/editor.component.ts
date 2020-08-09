@@ -135,6 +135,7 @@ export class EditorComponent implements OnInit, AfterViewInit {
     Object.assign(this.article, values);
     this.article.comments = [];
     this.article.views = {} as Map<string, SimpleProfile>;
+    this.article.watchers = {} as Map<string, SimpleProfile>;
     this.article.body = this.editor.quill.root.innerHTML;
   }
 }

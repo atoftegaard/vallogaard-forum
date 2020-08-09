@@ -3,6 +3,8 @@ import { DatePipe } from '@angular/common';
 import { Article } from '../../core';
 import { SimpleProfile } from '../../core/models/simple-profile.model';
 import { DOCUMENT } from '@angular/common';
+import { AuthService } from '../../auth/auth.service';
+import { AngularFirestore } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-article-meta',
@@ -16,7 +18,10 @@ export class ArticleMetaComponent {
   @Input() showSticky: boolean;
   @Input() bg: string;
 
-  constructor(@Inject(DOCUMENT) private document: Document, private datePipe: DatePipe) {}
+  constructor(@Inject(DOCUMENT) private document: Document,
+    private db: AngularFirestore,
+    private datePipe: DatePipe,
+    private authService: AuthService) {}
 
   toLongDate(date: any) {
     if (date) {
@@ -51,5 +56,37 @@ export class ArticleMetaComponent {
     selBox.select();
     document.execCommand('copy');
     document.body.removeChild(selBox);
+  }
+
+  isWatching() {
+    if (!this.article.watchers) {
+      return false;
+    } else {
+      return this.article.watchers[this.authService.uid];
+    }
+  }
+
+  watchingAllowed() {
+    if (!this.authService.profile) {
+      return false;
+    } else {
+      return this.authService.profile.notifyAboutNewComments;
+    }
+  }
+
+  async watch(watch) {
+    if (watch) {
+      this.article.watchers[this.authService.uid] = {
+        uid: this.authService.profile.uid,
+        name: this.authService.profile.name,
+        image: this.authService.profile.image
+      } as SimpleProfile;
+    } else {
+      delete this.article.watchers[this.authService.uid];
+    }
+    await this.db.collection<Article>('articles').doc(this.article.slug)
+      .update({
+        watchers: this.article.watchers
+      });
   }
 }
