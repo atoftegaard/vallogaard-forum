@@ -1,7 +1,7 @@
 <a [routerLink]="['/article', article.slug]" class="preview-link">
   <div class="article-preview row {{ article.sticky ? 'sticky' : '' }}">
-    <div class="col-md-12">
-      <h1>{{ article.title }}</h1>
+    <div class="col-md-12" style="width:100%">
+      <h3>{{ article.title }}</h3>
       <span style="color: #bbb">Klik her, for at læse opslaget</span>
       <app-article-meta [article]="article" [bg]="true"></app-article-meta>
     </div>

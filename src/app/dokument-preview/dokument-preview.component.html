@@ -1,0 +1,13 @@
+<a [attr.href]="[dokument.ref]" target="_blank" class="preview-link">
+    <div class="article-preview row">
+        <div class="col-md-7" style="padding-right:1em">
+            {{ dokument.title }}
+        </div>
+        <div class="col-md-3" style="padding-right:1em">
+            {{ toLongDate(dokument.uploadedAt) }}
+        </div>
+        <div class="col-md-2">
+            {{ dokument.size | filesize }}
+        </div>
+    </div>
+</a>

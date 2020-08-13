@@ -1,0 +1,39 @@
+<div class="settings-page">
+    <div class="banner">
+        <div class="container">
+          <h1 class="logo-font">Dokumenter</h1>
+          <div class="article-meta">
+              <div class="info">
+                  <span class="author"></span>
+                  <span class="date"></span>
+                  <span class="date" style="padding-top: 5px;"></span>
+              </div>
+            </div>              
+        </div>
+    </div>
+
+    <div class="page-wrapper">
+        <div class="container page">
+            <div class="col-md-12">
+                <div class="btn-wrapper" *ngIf="isAdmin">
+                    <app-dokumenter-upload></app-dokumenter-upload>
+                </div>
+
+                <app-dokument-preview
+                    *ngFor="let dokument of dokumenter | async"
+                    [dokument]="dokument">
+                </app-dokument-preview>
+
+                <div class="app-dokument-preview"
+                    [hidden]="!loading">
+                Henter dokumenter...
+                </div>
+                
+                <div class="app-dokument-preview"
+                    [hidden]="!(!loading && (dokumenter | async)?.length === 0)">
+                    Der er endnu ikke lagt nogle dokumenter op.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

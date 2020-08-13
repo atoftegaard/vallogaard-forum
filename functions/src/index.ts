@@ -51,6 +51,7 @@ exports.applyForUser = functions.https.onRequest((req: any, res: any) => {
                 'image': image,
                 'notifyAboutNewArticles': true,
                 'notifyAboutNewComments': true,
+                'notifyAboutAnyComments': false,
                 'shareEmail': true,
                 'uid': userRecord.uid,
                 'role': 'user'
@@ -59,7 +60,7 @@ exports.applyForUser = functions.https.onRequest((req: any, res: any) => {
                 console.log('profile added');
                 const dest = req.body.data.destination;
                 const mailOptions = {
-                    from: 'Valløgård Forum <andreas@toftegaard.it>',
+                    from: 'Valløgård Forum <noreply@vallogaard.dk>',
                     to: dest,
                     subject: 'Anmodning om brugeroprettelse',
                     html: `Der er kommet en anmodning om brugeroprettelse fra "` + name + `" - check <a href="https://console.firebase.google.com/project/vallogaard-2019/database/firestore/data~2Fprofiles">https://console.firebase.google.com/project/vallogaard-2019/database/firestore/data~2Fprofiles</a>`
@@ -116,7 +117,7 @@ exports.notifyNewArticle = functions.https.onRequest((req: any, res: any) => {
                     from: 'Valløgård Forum <noreply@vallogaard.dk>',
                     to: profile.email,
                     subject: 'Nyt opslag fra ' +  authorname,
-                    html: `<p>Hej ${profile.name}</p><p>${authorname} har lavet opslaget <a href="${articleurl}">${articlename}, klik her for at se det.</a></p>`
+                    html: `<p>Hej ${profile.name}</p><p>${authorname} har lavet opslaget ${articlename}, <a href="${articleurl}">klik her for at se det.</a></p>`
                 };
         
                 return transporter.sendMail(mailOptions, (error: any) => {
@@ -180,7 +181,7 @@ exports.notifyWatchers = functions.https.onRequest((req: any, res: any) => {
                             to: profile.email,
                             subject: 'Ny kommentar på opslaget "' +  article.title + '"',
                             html: `<p>Hej ${profile.name}</p><p>${commentorName} har skrevet en kommentar 
-                            på opslaget <a href="${articleUrl}">${article.title}, klik her for at se den.</a></p>
+                            på opslaget ${article.title}, <a href="${articleUrl}">klik her for at se den.</a></p>
                             <p>Du modtager denne besked fordi du har skrevet en kommentar i samme opslag. 
                             Hvis du ikke ønsker at notificeres, kan du slå det fra på opslaget ved at trykke 
                             på "øjet" i toppen af siden - eller du kan redigere dine notifikationsindstillinger.</p>`

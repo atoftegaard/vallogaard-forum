@@ -43,6 +43,7 @@ export class SettingsComponent implements OnInit {
       password: '',
       notifyAboutNewArticles: '',
       notifyAboutNewComments: '',
+      notifyAboutAnyComments: '',
       shareEmail: ''
     });
   }
@@ -80,6 +81,7 @@ export class SettingsComponent implements OnInit {
     this.profile.email = values.email;
     this.profile.notifyAboutNewArticles = values.notifyAboutNewArticles;
     this.profile.notifyAboutNewComments = values.notifyAboutNewComments;
+    this.profile.notifyAboutAnyComments = values.notifyAboutAnyComments;
     this.profile.shareEmail = values.shareEmail;
   }
 

@@ -7,5 +7,6 @@ export interface Profile {
   image: string;
   notifyAboutNewArticles: boolean;
   notifyAboutNewComments: boolean;
+  notifyAboutAnyComments: boolean;
   shareEmail: boolean;
 }

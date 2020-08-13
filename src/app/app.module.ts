@@ -19,6 +19,10 @@ import { ReferaterListComponent } from './referater-list/referater-list.componen
 import { ReferatPreviewComponent } from './referat-preview/referat-preview.component';
 import { ReferatUploadComponent } from './referat-upload/referat-upload.component';
 import { BrugereListComponent } from './brugere-list/brugere-list.component';
+import { DokumenterListComponent } from './dokumenter-list/dokumenter-list.component';
+import { DokumentPreviewComponent } from './dokument-preview/dokument-preview.component';
+import { NgxFilesizeModule } from 'ngx-filesize';
+import { DokumenterUploadComponent } from './dokumenter-upload/dokumenter-upload.component';
 
 registerLocaleData(localeDa);
 
@@ -45,7 +49,10 @@ const cookieConfig: NgcCookieConsentConfig = {
        ReferaterListComponent,
         ReferatPreviewComponent,
          ReferatUploadComponent,
-          BrugereListComponent],
+          BrugereListComponent,
+          DokumenterListComponent,
+          DokumentPreviewComponent,
+          DokumenterUploadComponent],
   imports: [
     BrowserModule,
     EditorModule,
@@ -53,6 +60,7 @@ const cookieConfig: NgcCookieConsentConfig = {
     SharedModule,
     HomeModule,
     AuthModule,
+    NgxFilesizeModule,
     AppRoutingModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
     AngularFirestoreModule,

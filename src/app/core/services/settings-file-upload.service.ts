@@ -22,4 +22,18 @@ export class ImageService {
     });
     return obs;
   }
+
+  public uploadFile(image: File, title: string): Observable<string> {
+    const obs = new Observable<string>(o => {
+      const fileId = uuid.v4();
+      const storageRef = firebase.storage().ref();
+      const imageRef = storageRef.child('dokumenter/' + fileId);
+      imageRef.put(image, { customMetadata: { title: title }}).then(() => {
+        imageRef.getDownloadURL().then((url) => {
+          o.next(url);
+        });
+      });
+    });
+    return obs;
+  }
 }

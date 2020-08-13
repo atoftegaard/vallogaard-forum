@@ -8,29 +8,20 @@
                     </div>
                 </div>
                 <p>
-                    <span>Vælg et referat (i pdf-format)</span>
-                    <input #imageInput class="form-control form-control-lg" type="file" required
-                        (change)="processFile(imageInput)" formControlName="file" accept="application/pdf">
+                    <span>Vælg et dokument</span>
+                    <input #fileInput class="form-control form-control-lg" type="file" required
+                        (change)="processFile(fileInput)" formControlName="file">
                 </p>
             </fieldset>
 
             <fieldset class="form-group">
                 <span>Titel</span>
                 <input class="form-control form-control-lg"
-                    type="text"
-                    required
-                    placeholder="Angiv titel"
-                    formControlName="title" />
-            </fieldset>
-
-            <fieldset class="form-group">
-                <span>Afholdelsesdato</span>
-                <input class="form-control form-control-lg"
-                    type="date"
-                    required
-                    placeholder="dd.mm.åååå"
-                    formControlName="date" />
-            </fieldset>
+                  type="text"
+                  required
+                  placeholder="Angiv titel"
+                  formControlName="title" />
+              </fieldset>
 
             <button class="btn btn-lg btn-default pull-xs-left" type="button"
                 (click)="uploadNew=false" *ngIf="uploadNew">
@@ -39,7 +30,7 @@
 
             <button class="btn btn-lg btn-primary pull-xs-right"
                 [disabled]="!settingsForm.valid || isSubmitting"type="submit">
-                Læg referat op
+                Læg dokument op
             </button>
         </fieldset>
     </form>
@@ -47,6 +38,6 @@
 <div>
     <button class="btn btn-lg btn-primary" type="button"
         (click)="uploadNew=true" *ngIf="!uploadNew">
-        Læg nyt referat op
+        Læg nyt dokument op
     </button>
 </div>

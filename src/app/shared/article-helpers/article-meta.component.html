@@ -1,13 +1,13 @@
 <div class="article-meta {{ bg ? 'bg' : '' }}">
   <div>
-    <a href="return:false;" (click)="copyUrl()" type="button" style="float: right;margin:0.5em" *ngIf="showSticky">
+    <button type="button" class="btn btn-link" (click)="copyUrl()" style="float: right;margin:0.5em" *ngIf="showSticky">
       <i class="ion-clipboard" style="font-size: 1.5em;" title="Kopier link til opslaget"></i>
-    </a>
+    </button>
   <div>
-    <a href="return:false;" (click)="watch(!isWatching())" type="button" style="float: right;margin:0.5em" *ngIf="showSticky && watchingAllowed()">
+    <button type="button" class="btn btn-link" (click)="watch(!isWatching())" style="float: right;margin:0.5em" *ngIf="showSticky && watchingAllowed()">
       <i *ngIf="isWatching()" class="ion-eye-disabled" style="font-size: 1.5em;" title="Få ikke en notifikation, når dette opslag kommenteres"></i>
       <i *ngIf="!isWatching()" class="ion-eye" style="font-size: 1.5em;" title="Få en notifikation, når dette opslag kommenteres"></i>
-    </a>
+    </button>
   </div>
 
   <img [src]="article.author.image" />

@@ -11,10 +11,6 @@ const routes: Routes = [
     loadChildren: () => import('./brugere/brugere.module').then(m => m.BrugereModule)
   },
   {
-    path: 'profile',
-    loadChildren: () => import('./profile/profile.module').then(m => m.ProfileModule)
-  },
-  {
     path: 'editor',
     loadChildren: () => import('./editor/editor.module').then(m => m.EditorModule)
   },
@@ -25,6 +21,10 @@ const routes: Routes = [
   {
     path: 'referater',
     loadChildren: () => import('./referater/referater.module').then(m => m.ReferaterModule)
+  },
+  {
+    path: 'dokumenter',
+    loadChildren: () => import('./dokumenter/dokumenter.module').then(m => m.DokumenterModule)
   }
 ];
 
