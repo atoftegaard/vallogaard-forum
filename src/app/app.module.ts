@@ -23,6 +23,7 @@ import { DokumenterListComponent } from './dokumenter-list/dokumenter-list.compo
 import { DokumentPreviewComponent } from './dokument-preview/dokument-preview.component';
 import { NgxFilesizeModule } from 'ngx-filesize';
 import { DokumenterUploadComponent } from './dokumenter-upload/dokumenter-upload.component';
+import { GeneralforsamlingPreviewComponent } from './generalforsamling-preview/generalforsamling-preview.component';
 
 registerLocaleData(localeDa);
 
@@ -52,7 +53,8 @@ const cookieConfig: NgcCookieConsentConfig = {
           BrugereListComponent,
           DokumenterListComponent,
           DokumentPreviewComponent,
-          DokumenterUploadComponent],
+          DokumenterUploadComponent,
+          GeneralforsamlingPreviewComponent],
   imports: [
     BrowserModule,
     EditorModule,

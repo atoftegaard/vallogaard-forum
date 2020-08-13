@@ -1,0 +1,8 @@
+.wrapper {
+    margin: -8px -16px 8px;
+    padding: 1em;
+    text-align: center;
+    background: repeating-linear-gradient( 45deg, #5db85b, #5db85b 10px, #56ab55 10px, #56ab55 20px );
+    color: white;
+    font-weight: bold;
+}
