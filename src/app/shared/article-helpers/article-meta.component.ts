@@ -1,6 +1,6 @@
 import { Component, Input, Inject } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { Article } from '../../core';
+import { Article, Profile } from '../../core';
 import { SimpleProfile } from '../../core/models/simple-profile.model';
 import { DOCUMENT } from '@angular/common';
 import { AuthService } from '../../auth/auth.service';
@@ -24,6 +24,16 @@ export class ArticleMetaComponent {
     private datePipe: DatePipe,
     private authService: AuthService) {}
 
+  ngOnInit() {
+    // Load the current user's data
+    this.userService.currentUser.subscribe(
+      (userData: Profile) => {
+        this.canModify = (userData.uid === this.comment.author.uid);
+      }
+    );
+    this.getEmail(this.comment.author.uid);
+  }
+  
   toLongDate(date: any) {
     if (date) {
       return this.datePipe.transform(date.toDate(), 'longDate');
