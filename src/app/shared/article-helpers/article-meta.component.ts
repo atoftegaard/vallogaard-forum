@@ -33,7 +33,7 @@ export class ArticleMetaComponent {
     );
     this.getEmail(this.comment.author.uid);
   }
-  
+
   toLongDate(date: any) {
     if (date) {
       return this.datePipe.transform(date.toDate(), 'longDate');
