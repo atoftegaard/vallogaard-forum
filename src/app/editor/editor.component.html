@@ -34,7 +34,7 @@
             </fieldset>
 
             <fieldset class="form-group">
-              <p-editor [style]="{'height':'320px'}" formControlName="body" required>
+              <p-editor [style]="{'height':'320px'}" formControlName="body" required [modules]="editorModules">
                 <p-header>
                   <span class="ql-formats">
                     <select class="ql-size">

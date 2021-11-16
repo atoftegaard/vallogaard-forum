@@ -34,11 +34,13 @@
               "./node_modules/primeicons/primeicons.css",
               "./node_modules/quill/dist/quill.core.css",
               "./node_modules/quill/dist/quill.snow.css",
-              "./node_modules/cookieconsent/build/cookieconsent.min.css"
+              "./node_modules/cookieconsent/build/cookieconsent.min.css",
+              "./node_modules/quill-mention/dist/quill.mention.min.css"
             ],
             "scripts": [
               "./node_modules/cookieconsent/build/cookieconsent.min.js",
-              "./node_modules/quill/dist/quill.js"
+              "./node_modules/quill/dist/quill.js",
+              "./node_modules/quill-mention/dist/quill.mention.min.js"
             ]
           },
           "configurations": {

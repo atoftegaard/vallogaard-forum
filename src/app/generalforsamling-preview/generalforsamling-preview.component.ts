@@ -34,7 +34,7 @@ export class GeneralforsamlingPreviewComponent implements OnInit {
 
     const that = this;
     this.db.collection('generalforsamling').doc('current').valueChanges().subscribe((g: any) => {
-      that.date = new Date(g.date.seconds * 1000 + g.date.nanoseconds/1000000);
+      that.date = new Date(g.date.seconds * 1000 + g.date.nanoseconds / 1000000);
       that.anyUpcoming = that.date >= new Date();
     });
   }
@@ -52,7 +52,6 @@ export class GeneralforsamlingPreviewComponent implements OnInit {
         console.error('Error writing document: ', error);
         that.isSubmitting = false;
     });
-      
   }
 
 }

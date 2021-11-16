@@ -27,6 +27,14 @@ export class EditorComponent implements OnInit, AfterViewInit {
   error: string;
   isSubmitting = false;
   isAdmin = false;
+  editorModules = { mention: {
+    allowedChars: /^[A-Za-z\sÅÄÖåäö]*$/,
+    mentionDenotationChars: ['@'],
+    source: async function(searchTerm, renderList) {
+      const matchedPeople = await this.suggestPeople(searchTerm);
+      renderList(matchedPeople);
+    }
+  }};
 
   constructor(
     private route: ActivatedRoute,
@@ -64,6 +72,20 @@ export class EditorComponent implements OnInit, AfterViewInit {
     this.editor.quill.getModule('toolbar').addHandler('image', this.imageHandler.bind(this));
   }
 
+  async suggestPeople(searchTerm) {
+    const allPeople = [
+      {
+        id: 1,
+        value: "Fredrik Sundqvist"
+      },
+      {
+        id: 2,
+        value: "Patrik Sjölin"
+      }
+    ];
+    return allPeople.filter(person => person.value.includes(searchTerm));
+  }
+
   imageHandler() {
     const that = this;
     const input = document.createElement('input');
@@ -71,6 +93,7 @@ export class EditorComponent implements OnInit, AfterViewInit {
     input.setAttribute('accept', 'image/*');
     input.click();
     const quill = this.editor.quill;
+
     input.onchange = async function() {
       if (input.files.length) {
         const file = input.files[0];
