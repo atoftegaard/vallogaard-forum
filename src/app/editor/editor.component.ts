@@ -76,11 +76,11 @@ export class EditorComponent implements OnInit, AfterViewInit {
     const allPeople = [
       {
         id: 1,
-        value: "Fredrik Sundqvist"
+        value: 'Fredrik Sundqvist'
       },
       {
         id: 2,
-        value: "Patrik Sjölin"
+        value: 'Patrik Sjölin'
       }
     ];
     return allPeople.filter(person => person.value.includes(searchTerm));
