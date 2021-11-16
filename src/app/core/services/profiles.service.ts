@@ -20,9 +20,9 @@ export class ProfilesService {
       .where('shareEmail', '==', true));
     return collection.valueChanges().pipe(take(1), map(x => {
       if (x[0]) {
-        return x[0].email
+        return x[0].email;
       } else {
-        null;
+        return null;
       }
     }));
   }
