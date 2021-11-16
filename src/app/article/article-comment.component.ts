@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { Comment, UserService, Profile } from '../core';
+import { Comment, UserService, Profile, ProfilesService } from '../core';
 
 @Component({
   selector: 'app-article-comment',
@@ -9,6 +9,7 @@ import { Comment, UserService, Profile } from '../core';
 export class ArticleCommentComponent implements OnInit {
   constructor(
     private userService: UserService,
+    private profilesService: ProfilesService,
     private datePipe: DatePipe
   ) {}
 
@@ -16,6 +17,7 @@ export class ArticleCommentComponent implements OnInit {
   @Output() deleteComment = new EventEmitter<boolean>();
 
   canModify: boolean;
+  email: String = '';
 
   ngOnInit() {
     // Load the current user's data
@@ -24,6 +26,13 @@ export class ArticleCommentComponent implements OnInit {
         this.canModify = (userData.uid === this.comment.author.uid);
       }
     );
+    this.getEmail(this.comment.author.uid);
+  }
+
+  getEmail(uid: string) {
+    this.profilesService.getEmail(uid).subscribe((x) => {
+      this.email = x;
+    });
   }
 
   deleteClicked() {

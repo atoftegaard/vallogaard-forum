@@ -13,10 +13,10 @@
   <img [src]="article.author.image" />
 
   <div class="info">
-    <span class="author" *ngIf="article.author.shareEmail">
-      Af <a href="mailto:{{article.author.email}}" style="color:inherit">{{ article.author.name }}</a>
+    <span class="author" *ngIf="email">
+      Af <a href="mailto:{{email}}" style="color:inherit">{{ article.author.name }}</a>
     </span>
-    <span class="author" *ngIf="!article.author.shareEmail">
+    <span class="author" *ngIf="!email">
       Af {{ article.author.name }}
     </span>
     <span class="date">

@@ -14,6 +14,7 @@ import { AngularFirestore } from '@angular/fire/firestore';
 })
 export class ArticleMetaComponent {
   [x: string]: any;
+  email: string;
   @Input() article: Article;
   @Input() showSticky: boolean;
   @Input() bg: string;
@@ -29,6 +30,12 @@ export class ArticleMetaComponent {
     } else {
       return '';
     }
+  }
+
+  getEmail(uid: string) {
+    this.profilesService.getEmail(uid).subscribe((x) => {
+      this.email = x;
+    });
   }
 
   articleCount() {

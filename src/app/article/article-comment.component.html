@@ -7,10 +7,10 @@
       <img [src]="comment.author.image" class="comment-author-img" />
     </span>
     &nbsp;
-    <span class="comment-author" *ngIf="comment.author.shareEmail">
-      <a href="mailto:{{comment.author.email}}" style="color:black">{{ comment.author.name }}</a>
+    <span class="comment-author" *ngIf="email">
+      <a href="mailto:{{email}}" style="color:black">{{ comment.author.name }}</a>
     </span>
-    <span class="comment-author" *ngIf="!comment.author.shareEmail">
+    <span class="comment-author" *ngIf="!email">
       {{ comment.author.name }}
     </span>
     <span class="date-posted">

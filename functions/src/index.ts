@@ -5,6 +5,7 @@ import { Article } from '../../src/app/core/models/article.model';
 
 const admin = require('firebase-admin');
 const nodemailer = require('nodemailer');
+const md5 = require( 'md5' );
 const cors = require('cors')({ origin: true });
 admin.initializeApp();
 
@@ -32,7 +33,7 @@ exports.applyForUser = functions.https.onRequest((req: any, res: any) => {
         const name = req.body.data.name;
         const email = req.body.data.email;
         const address = req.body.data.address;
-        const image = 'https://api.adorable.io/avatars/40/' + name.replace(/\s+/g, '') + '.png';
+        const image = 'https://www.gravatar.com/avatar/' + md5(email);
 
         admin.auth().createUser({
             email: email,
@@ -52,7 +53,7 @@ exports.applyForUser = functions.https.onRequest((req: any, res: any) => {
                 'notifyAboutNewArticles': true,
                 'notifyAboutNewComments': true,
                 'notifyAboutAnyComments': false,
-                'shareEmail': true,
+                'shareEmail': false,
                 'uid': userRecord.uid,
                 'role': 'user'
               })
