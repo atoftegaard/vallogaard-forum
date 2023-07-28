@@ -1,0 +1,18 @@
+{
+    "production": true,
+    "host": "vallogaard.dk",
+    "emailconfig": {
+        "username": "toftegaard.andreas@gmail.com",
+        "password": "dcmhylzpdvxieyvc",
+        "applyForUserUrl": "https://us-central1-vallogaard-2019.cloudfunctions.net/applyForUser"
+    },
+    "firebaseConfig": {
+        "apiKey": "AIzaSyC2lub1fA4bIYTbaJehzYQ2yhp_zJjlLSo",
+        "authDomain": "vallogaard-2019.firebaseapp.com",
+        "databaseURL": "https://vallogaard-2019.firebaseio.com",
+        "projectId": "vallogaard-2019",
+        "storageBucket": "gs://vallogaard-2019.appspot.com/",
+        "messagingSenderId": "724568229295",
+        "appId": "1:724568229295:web:441aa1beeb123bb0"
+    }
+}

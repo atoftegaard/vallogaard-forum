@@ -17,7 +17,9 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-exports.applyForUser = functions.https.onRequest((req: any, res: any) => {
+exports.applyForUser = functions.runWith({
+    enforceAppCheck: true, // Reject requests with missing or invalid App Check tokens.
+}).https.onRequest((req: any, res: any) => {
     return cors(req, res, () => {
         
         res.set('Access-Control-Allow-Origin', "*");
@@ -86,7 +88,9 @@ exports.applyForUser = functions.https.onRequest((req: any, res: any) => {
     });    
 });
 
-exports.notifyNewArticle = functions.https.onRequest((req: any, res: any) => {
+exports.notifyNewArticle = functions.runWith({
+    enforceAppCheck: true, // Reject requests with missing or invalid App Check tokens.
+}).https.onRequest((req: any, res: any) => {
     return cors(req, res, () => {
         
         res.set('Access-Control-Allow-Origin', "*");
@@ -133,7 +137,9 @@ exports.notifyNewArticle = functions.https.onRequest((req: any, res: any) => {
     });    
 });
 
-exports.notifyWatchers = functions.https.onRequest((req: any, res: any) => {
+exports.notifyWatchers = functions.runWith({
+    enforceAppCheck: true, // Reject requests with missing or invalid App Check tokens.
+}).https.onRequest((req: any, res: any) => {
     return cors(req, res, () => {
         
         res.set('Access-Control-Allow-Origin', "*");

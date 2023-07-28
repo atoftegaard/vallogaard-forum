@@ -18,5 +18,10 @@
       "es6",
       "dom"
     ]
-  }
+  },
+  "linterOptions": {
+    "exclude": [
+        "node_modules"
+    ]
+  },
 }
