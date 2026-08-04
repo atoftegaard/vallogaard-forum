@@ -54,8 +54,19 @@
                     class="form-control form-control-lg"
                     type="password"/>
                 </fieldset>
+                <fieldset class="form-group" *ngIf="authType == 'login'">
+                  <label style="font-weight: normal; margin-bottom: 0;">
+                    <input formControlName="rememberMe" type="checkbox" style="margin-right: 0.5em;" />
+                    Forbliv logget ind
+                  </label>
+                </fieldset>
                 <p *ngIf="authType == 'login'" style="color:#373a3c;">Hvis det er første gang du besøger denne side, skal du først anmode om adgang.</p>
                 <p *ngIf="authType == 'reset'" style="color:#373a3c;">Indtast den emailadresse du er oprettet med, i feltet ovenfor. <br>Når du efterfølgende trykker på knappen 'Nulstil kodeord', vil du på email modtage instrukser til angivelse af et nyt kodeord.</p>
+                <p *ngIf="authType == 'register'" style="color:#373a3c; font-size: 0.8em;">
+                  Denne side er beskyttet af reCAPTCHA, og Googles
+                  <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Privatlivspolitik</a> og
+                  <a href="https://policies.google.com/terms" target="_blank" rel="noopener">Servicevilkår</a> gælder.
+                </p>
                 <p>
                   <a [routerLink]="['/reset']" *ngIf="authType == 'login'" style="color: #373a3c">
                     Klik her, hvis du har glemt dit kodeord
@@ -71,6 +82,7 @@
               </p>
             </fieldset>
           <div *ngIf="loginError" class="text-danger pull-xs-right">Forkerte log ind-oplysninger, forsøg igen.</div>
+          <div *ngIf="applyError" class="text-danger pull-xs-right">Kunne ikke sende anmodningen. Prøv igen.</div>
         </form>
       </div>
 

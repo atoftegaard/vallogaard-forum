@@ -6,3 +6,11 @@
 typings/
 
 node_modules/
+
+# Contains secrets (Gmail app password) - never commit
+.runtimeconfig.json
+
+# Contains secrets (reCAPTCHA secret key) - never commit
+.env
+.env.*
+!.env.example

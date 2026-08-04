@@ -1,12 +1,13 @@
 import { Component, OnInit, Renderer2, Inject } from '@angular/core';
 import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { Errors } from '../core';
+import { Errors, RecaptchaService } from '../core';
 import { AuthService } from '../auth/auth.service';
-import { AngularFireFunctions } from '@angular/fire/functions';
+import { Functions, httpsCallable } from '@angular/fire/functions';
 import { DOCUMENT } from '@angular/common';
 
 @Component({
+  standalone: false,
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.css']
 })
@@ -18,13 +19,15 @@ export class AuthComponent implements OnInit {
   resetComplete = false;
   loginError = false;
   applied = false;
+  applyError = false;
   authForm: FormGroup;
 
   constructor(
     private route: ActivatedRoute,
     private fb: FormBuilder,
     private authService: AuthService,
-    private fns: AngularFireFunctions,
+    private fns: Functions,
+    private recaptchaService: RecaptchaService,
     private renderer: Renderer2,
     @Inject(DOCUMENT) private document: Document
   ) {
@@ -56,6 +59,9 @@ export class AuthComponent implements OnInit {
       } else {
         this.authForm.addControl('password', new FormControl());
       }
+      if (this.authType === 'login') {
+        this.authForm.addControl('rememberMe', new FormControl(true));
+      }
     });
   }
 
@@ -72,7 +78,7 @@ export class AuthComponent implements OnInit {
     } else {
       this.loginError = false;
       this.isSubmitting = true;
-      this.authService.login(this.authForm.value.email, this.authForm.value.password).then(x => {
+      this.authService.login(this.authForm.value.email, this.authForm.value.password, this.authForm.value.rememberMe).then(x => {
         this.isSubmitting = false;
         if (!x) {
           this.loginError = true;
@@ -83,27 +89,42 @@ export class AuthComponent implements OnInit {
     }
   }
 
-  applyForUser() {
+  async applyForUser() {
     this.isSubmitting = true;
+    this.applyError = false;
+
+    let recaptchaToken: string;
+    try {
+      recaptchaToken = await this.recaptchaService.execute('apply_for_user');
+    } catch (err) {
+      console.error('Error obtaining reCAPTCHA token: ', err);
+      this.isSubmitting = false;
+      this.applyError = true;
+      return;
+    }
+
     this.sendApplicationNotification(this.authForm.value.username.trim(),
       this.authForm.value.email.trim(),
-      this.authForm.value.address.trim());
+      this.authForm.value.address.trim(),
+      recaptchaToken);
   }
 
-  sendApplicationNotification(name: string, email: string, address: string) {
-    const callable = this.fns.httpsCallable('applyForUser');
+  sendApplicationNotification(name: string, email: string, address: string, recaptchaToken: string) {
+    const callable = httpsCallable(this.fns, 'applyForUser');
     callable({
       'destination': 'andreas@toftegaard.it',
       'name': name,
       'email': email,
-      'address': address
-    }).toPromise().then(res => {
+      'address': address,
+      'recaptchaToken': recaptchaToken
+    }).then(res => {
       this.applied = true;
       this.isSubmitting = false;
     })
     .catch(er => {
       console.log(er);
       this.isSubmitting = false;
+      this.applyError = true;
     });
   }
 }

@@ -2,13 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { Dokument } from '../core/models/dokument.model';
 import { ImageService } from '../core';
-import { AngularFirestore } from '@angular/fire/firestore';
+import { Firestore } from '@angular/fire/firestore';
 
 class FileSnippet {
   constructor(public src: string, public file: File) {}
 }
 
 @Component({
+  standalone: false,
   selector: 'app-dokumenter-upload',
   templateUrl: './dokumenter-upload.component.html',
   styleUrls: ['./dokumenter-upload.component.css']
@@ -24,7 +25,7 @@ export class DokumenterUploadComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private imageService: ImageService,
-    private db: AngularFirestore) {
+    private firestore: Firestore) {
     this.settingsForm = this.fb.group({
       file: '',
       title: ''

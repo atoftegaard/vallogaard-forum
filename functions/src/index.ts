@@ -1,13 +1,154 @@
-import * as functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v1';
+import sharp = require('sharp');
+import { initializeApp } from 'firebase-admin/app';
+import { getFirestore } from 'firebase-admin/firestore';
+import { getAuth } from 'firebase-admin/auth';
+import { getStorage } from 'firebase-admin/storage';
 import { environment } from '../../src/environments/environment';
 import { Profile } from '../../src/app/core/models/profile.model';
 import { Article } from '../../src/app/core/models/article.model';
 
-const admin = require('firebase-admin');
 const nodemailer = require('nodemailer');
 const md5 = require( 'md5' );
 const cors = require('cors')({ origin: true });
-admin.initializeApp();
+
+// firebase-admin's classic admin.firestore()/admin.auth() namespace API stopped reliably
+// attaching via plain require('firebase-admin') under v14 - the modular getFirestore()/
+// getAuth() accessors are the officially supported replacement.
+initializeApp();
+const db = getFirestore();
+const auth = getAuth();
+
+const RESIZE_SUFFIX = '_500x500';
+
+// Replaces the deprecated "Resize Images" Firebase Extension. Triggers on every upload;
+// skips its own output (files already ending in RESIZE_SUFFIX) to avoid re-triggering itself.
+// Deployed to europe-west1 because the default storage bucket is in the "eu" multi-region -
+// running the function anywhere else means an unnecessary cross-region hop for every upload.
+exports.resizeImage = functions.region('europe-west1').runWith({
+    memory: '512MB',
+    timeoutSeconds: 60,
+}).storage.object().onFinalize(async (object) => {
+    const filePath = object.name;
+    const contentType = object.contentType;
+
+    if (!filePath || !contentType || !contentType.startsWith('image/')) {
+        return null;
+    }
+
+    if (filePath.endsWith(RESIZE_SUFFIX)) {
+        return null;
+    }
+
+    const bucket = getStorage().bucket(object.bucket);
+    const [buffer] = await bucket.file(filePath).download();
+
+    const resized = await sharp(buffer).resize(500, 500, { fit: 'cover' }).toBuffer();
+
+    await bucket.file(filePath + RESIZE_SUFFIX).save(resized, {
+        metadata: { contentType }
+    });
+
+    return null;
+});
+
+// Client-side role checks (and even Firestore rules) only gate the UI/database - these
+// functions run with the Admin SDK, so they must independently verify the caller is an
+// admin before touching another user's Auth account.
+async function assertIsAdmin(context: functions.https.CallableContext) {
+    if (!context.auth) {
+        throw new functions.https.HttpsError('unauthenticated', 'Du skal være logget ind.');
+    }
+    const callerProfile = await db.collection('profiles').doc(context.auth.uid).get();
+    if (!callerProfile.exists || callerProfile.data()?.role !== 'admin') {
+        throw new functions.https.HttpsError('permission-denied', 'Kun administratorer kan udføre denne handling.');
+    }
+}
+
+exports.deleteUserAccount = functions.https.onCall(async (data: any, context: functions.https.CallableContext) => {
+    await assertIsAdmin(context);
+    const uid: string = data.uid;
+    if (!uid) {
+        throw new functions.https.HttpsError('invalid-argument', 'uid mangler.');
+    }
+
+    await db.collection('profiles').doc(uid).delete();
+    await auth.deleteUser(uid);
+
+    return { success: true };
+});
+
+exports.setUserDisabled = functions.https.onCall(async (data: any, context: functions.https.CallableContext) => {
+    await assertIsAdmin(context);
+    const uid: string = data.uid;
+    const disabled: boolean = !!data.disabled;
+    if (!uid) {
+        throw new functions.https.HttpsError('invalid-argument', 'uid mangler.');
+    }
+
+    await auth.updateUser(uid, { disabled });
+    await db.collection('profiles').doc(uid).update({ disabled });
+
+    return { success: true };
+});
+
+// Firestore has no visibility into Auth records at all, and the "disabled" field mirrored
+// onto the profile doc can drift (e.g. applyForUser creates the Auth user as disabled but
+// never sets it on the profile). This is the only way to get the real, current value.
+exports.listUserAuthStatus = functions.https.onCall(async (data: any, context: functions.https.CallableContext) => {
+    await assertIsAdmin(context);
+
+    const result: { [uid: string]: boolean } = {};
+    let pageToken: string | undefined;
+    do {
+        const listResult = await auth.listUsers(1000, pageToken);
+        listResult.users.forEach((userRecord: any) => {
+            result[userRecord.uid] = userRecord.disabled;
+        });
+        pageToken = listResult.pageToken;
+    } while (pageToken);
+
+    return result;
+});
+
+// Public member directory: any logged-in user (not just admins) may see the name/email/address
+// of other active members. Only these three fields are ever returned - never uid, role, image,
+// notification settings, etc. "Active" is checked against the real Auth record, not the
+// Firestore profile's own "disabled" mirror, since that mirror is never set for users who are
+// still pending admin approval (see applyForUser) and would otherwise leak their details here.
+exports.listActiveMembers = functions.https.onCall(async (data: any, context: functions.https.CallableContext) => {
+    if (!context.auth) {
+        throw new functions.https.HttpsError('unauthenticated', 'Du skal være logget ind.');
+    }
+
+    const disabledUids = new Set<string>();
+    let pageToken: string | undefined;
+    do {
+        const listResult = await auth.listUsers(1000, pageToken);
+        listResult.users.forEach((userRecord: any) => {
+            if (userRecord.disabled) {
+                disabledUids.add(userRecord.uid);
+            }
+        });
+        pageToken = listResult.pageToken;
+    } while (pageToken);
+
+    const profilesSnap = await db.collection('profiles').get();
+    const members: { name: string, email: string, address: string }[] = [];
+    profilesSnap.forEach((doc: any) => {
+        if (disabledUids.has(doc.id)) {
+            return;
+        }
+        const profile = doc.data();
+        members.push({
+            name: profile.name,
+            email: profile.email,
+            address: profile.address
+        });
+    });
+
+    return members;
+});
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -17,11 +158,38 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-exports.applyForUser = functions.runWith({
-    enforceAppCheck: true, // Reject requests with missing or invalid App Check tokens.
-}).https.onRequest((req: any, res: any) => {
-    return cors(req, res, () => {
-        
+const RECAPTCHA_SCORE_THRESHOLD = 0.5;
+
+// enforceAppCheck (previously set on this function) only works for callable (onCall) functions,
+// not plain onRequest ones like this - it was silently doing nothing, which is why bots kept
+// getting through despite it being present. reCAPTCHA v3 verification below is what actually
+// gates this endpoint: it checks a per-request token against Google, scoring bot-likelihood.
+async function verifyRecaptcha(token: string): Promise<boolean> {
+    if (!token) {
+        return false;
+    }
+    const secret = process.env.RECAPTCHA_SECRET_KEY;
+    if (!secret) {
+        console.error('RECAPTCHA_SECRET_KEY is not configured');
+        return false;
+    }
+
+    const params = new URLSearchParams({ secret, response: token });
+    const response = await fetch('https://www.google.com/recaptcha/api/siteverify', {
+        method: 'POST',
+        body: params
+    });
+    const result: any = await response.json();
+
+    return result.success === true
+        && result.action === 'apply_for_user'
+        && typeof result.score === 'number'
+        && result.score >= RECAPTCHA_SCORE_THRESHOLD;
+}
+
+exports.applyForUser = functions.https.onRequest((req: any, res: any) => {
+    return cors(req, res, async () => {
+
         res.set('Access-Control-Allow-Origin', "*");
         res.set('Access-Control-Allow-Methods', 'GET, POST');
 
@@ -32,12 +200,19 @@ exports.applyForUser = functions.runWith({
 
 		console.log('applyForUser called with body', JSON.stringify(req.body));
 
+        const isHuman = await verifyRecaptcha(req.body.data.recaptchaToken);
+        if (!isHuman) {
+            console.log('applyForUser rejected: failed reCAPTCHA verification');
+            res.status(403).send('Kunne ikke verificere at anmodningen kommer fra et menneske.');
+            return;
+        }
+
         const name = req.body.data.name;
         const email = req.body.data.email;
         const address = req.body.data.address;
         const image = 'https://www.gravatar.com/avatar/' + md5(email);
 
-        admin.auth().createUser({
+        auth.createUser({
             email: email,
             emailVerified: false,
             password: 'testtest',
@@ -47,7 +222,7 @@ exports.applyForUser = functions.runWith({
           }).then((userRecord: any) => {
             // See the UserRecord reference doc for the contents of userRecord.
             console.log('Successfully created new user:', userRecord.uid);
-            admin.firestore().collection('profiles').doc(userRecord.uid).set({
+            db.collection('profiles').doc(userRecord.uid).set({
                 'name': name,
                 'email': email,
                 'address': address,
@@ -68,14 +243,15 @@ exports.applyForUser = functions.runWith({
                     subject: 'Anmodning om brugeroprettelse',
                     html: `Der er kommet en anmodning om brugeroprettelse fra "` + name + `" - check <a href="https://console.firebase.google.com/project/vallogaard-2019/database/firestore/data~2Fprofiles">https://console.firebase.google.com/project/vallogaard-2019/database/firestore/data~2Fprofiles</a>`
                 };
-        
-                return transporter.sendMail(mailOptions, (error: any) => {
-                    if(error){
+
+                // The account and profile are already created at this point - a failed
+                // notification email shouldn't make the client think registration failed.
+                transporter.sendMail(mailOptions, (error: any) => {
+                    if (error) {
                         console.log('sendMail error', error.toString());
-                        return res.status(500).send(error.toString());
                     }
-                    return res.status(200).send({ data: 'OK' });
                 });
+                return res.status(200).send({ data: 'OK' });
               })
               .catch((error: any) => {
                 console.log('collection error', error);
@@ -108,7 +284,7 @@ exports.notifyNewArticle = functions.runWith({
        
         console.log('notifyNewArticle called with body', JSON.stringify(req.body));
         
-        admin.firestore().collection('profiles', (ref: any) => ref.where('notifyAboutNewArticles', '==', true)).get()
+        db.collection('profiles').where('notifyAboutNewArticles', '==', true).get()
         .then((snap: any) => {
             if (snap.empty) {
                 return;
@@ -157,17 +333,15 @@ exports.notifyWatchers = functions.runWith({
  
         console.log('notifyWatchers called with body', JSON.stringify(req.body));
         
-        admin.firestore().collection('articles')
-        .get(articleSlug).then((aDoc: any) => {
-            if (aDoc.exists) {
+        db.collection('articles').doc(articleSlug).get().then((aDoc: any) => {
+            if (!aDoc.exists) {
                 console.log('article not found');
                 return;
             }
 
-            aDoc.forEach((articleDoc: any) => {
-                const article = articleDoc.data() as Article;
-                
-                admin.firestore().collection('profiles', (ref: any) => ref.where('notifyAboutNewComments', '==', true)).get()
+            const article = aDoc.data() as Article;
+
+            db.collection('profiles').where('notifyAboutNewComments', '==', true).get()
                 .then((snap: any) => {
                     if (snap.empty) {
                         return;
@@ -187,13 +361,13 @@ exports.notifyWatchers = functions.runWith({
                             from: 'Valløgård Forum <noreply@vallogaard.dk>',
                             to: profile.email,
                             subject: 'Ny kommentar på opslaget "' +  article.title + '"',
-                            html: `<p>Hej ${profile.name}</p><p>${commentorName} har skrevet en kommentar 
+                            html: `<p>Hej ${profile.name}</p><p>${commentorName} har skrevet en kommentar
                             på opslaget ${article.title}, <a href="${articleUrl}">klik her for at se den.</a></p>
-                            <p>Du modtager denne besked fordi du har skrevet en kommentar i samme opslag. 
-                            Hvis du ikke ønsker at notificeres, kan du slå det fra på opslaget ved at trykke 
+                            <p>Du modtager denne besked fordi du har skrevet en kommentar i samme opslag.
+                            Hvis du ikke ønsker at notificeres, kan du slå det fra på opslaget ved at trykke
                             på "øjet" i toppen af siden - eller du kan redigere dine notifikationsindstillinger.</p>`
                         };
-                
+
                         return transporter.sendMail(mailOptions, (error: any) => {
                             if(error){
                                 console.log('sendMail error', error.toString());
@@ -203,7 +377,6 @@ exports.notifyWatchers = functions.runWith({
                         });
                     });
                 });
-            });
         });
-    });    
+    });
 });

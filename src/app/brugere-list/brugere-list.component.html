@@ -26,12 +26,34 @@
                         <th>Navn</th>
                         <th>Email</th>
                         <th>Adresse</th>
+                        <th>Status</th>
+                        <th>Handlinger</th>
                     </thead>
                     <tbody>
                         <tr *ngFor="let bruger of brugere | async">
                             <td>{{ bruger.name }}</td>
                             <td><a href="mailto:{{ bruger.email }}">{{ bruger.email }}</a></td>
                             <td>{{ bruger.address }}</td>
+                            <td>{{ isDisabled(bruger) ? 'Deaktiveret' : 'Aktiv' }}</td>
+                            <td>
+                                <div class="actions">
+                                    <button type="button" class="btn btn-sm btn-default"
+                                        [disabled]="busyUid === bruger.uid"
+                                        (click)="resetPassword(bruger)">
+                                        Nulstil kodeord
+                                    </button>
+                                    <button type="button" class="btn btn-sm {{ isDisabled(bruger) ? 'btn-success' : 'btn-warning' }}"
+                                        [disabled]="busyUid === bruger.uid"
+                                        (click)="toggleDisabled(bruger)">
+                                        {{ isDisabled(bruger) ? 'Aktiver' : 'Deaktiver' }}
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-danger"
+                                        [disabled]="busyUid === bruger.uid"
+                                        (click)="deleteUser(bruger)">
+                                        Slet
+                                    </button>
+                                </div>
+                            </td>
                         </tr>
                     </tbody>
                 </table>

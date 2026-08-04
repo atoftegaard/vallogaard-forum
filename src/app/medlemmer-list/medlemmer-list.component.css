@@ -12,10 +12,3 @@ th, td {
     vertical-align: middle;
     border-bottom: 1px solid #eee;
 }
-
-.actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5em;
-    width: 15em;
-}

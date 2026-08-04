@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { ArticleListConfig, UserService } from '../core';
 
 @Component({
+  standalone: false,
   selector: 'app-home-page',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']

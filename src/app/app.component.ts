@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { UserService } from './core';
 
 @Component({
+  standalone: false,
   selector: 'app-root',
   templateUrl: './app.component.html'
 })

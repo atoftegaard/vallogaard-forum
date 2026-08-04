@@ -3,6 +3,7 @@ import { Component, Input } from '@angular/core';
 import { Errors } from '../core';
 
 @Component({
+  standalone: false,
   selector: 'app-list-errors',
   templateUrl: './list-errors.component.html'
 })

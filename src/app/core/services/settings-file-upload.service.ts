@@ -1,21 +1,18 @@
 import { Injectable, } from '@angular/core';
 import { Observable } from 'rxjs';
-import * as firebase from 'firebase/app';
+import { Storage, ref, uploadBytes, getDownloadURL } from '@angular/fire/storage';
 import * as uuid from 'uuid';
-
-require('firebase/storage');
 
 @Injectable()
 export class ImageService {
-  constructor( ) {}
+  constructor(private storage: Storage) {}
 
   public uploadImage(image: File): Observable<string> {
     const obs = new Observable<string>(o => {
       const imgId = uuid.v4();
-      const storageRef = firebase.storage().ref();
-      const imageRef = storageRef.child(imgId);
-      imageRef.put(image).then(() => {
-        imageRef.getDownloadURL().then((url) => {
+      const imageRef = ref(this.storage, imgId);
+      uploadBytes(imageRef, image, { contentType: image.type }).then(() => {
+        getDownloadURL(imageRef).then((url) => {
           o.next(url);
         });
       });
@@ -26,10 +23,9 @@ export class ImageService {
   public uploadFile(image: File, title: string): Observable<string> {
     const obs = new Observable<string>(o => {
       const fileId = uuid.v4();
-      const storageRef = firebase.storage().ref();
-      const imageRef = storageRef.child('dokumenter/' + fileId);
-      imageRef.put(image, { customMetadata: { title: title }}).then(() => {
-        imageRef.getDownloadURL().then((url) => {
+      const imageRef = ref(this.storage, 'dokumenter/' + fileId);
+      uploadBytes(imageRef, image, { contentType: image.type, customMetadata: { title: title }}).then(() => {
+        getDownloadURL(imageRef).then((url) => {
           o.next(url);
         });
       });

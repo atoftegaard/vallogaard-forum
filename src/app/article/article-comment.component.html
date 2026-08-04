@@ -4,7 +4,7 @@
   </div>
   <div class="card-footer">
     <span class="comment-author">
-      <img [src]="comment.author.image" class="comment-author-img" />
+      <img [src]="authorImage || comment.author.image" [appAvatarFallback]="comment.author.name" class="comment-author-img" />
     </span>
     &nbsp;
     <span class="comment-author" *ngIf="email">

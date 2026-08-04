@@ -7,6 +7,7 @@ import { RouterModule } from '@angular/router';
 import { ArticleListComponent, ArticleMetaComponent, ArticlePreviewComponent } from './article-helpers';
 import { ListErrorsComponent } from './list-errors.component';
 import { ShowAuthedDirective } from './show-authed.directive';
+import { AvatarFallbackDirective } from './avatar-fallback.directive';
 
 @NgModule({
   imports: [
@@ -21,7 +22,8 @@ import { ShowAuthedDirective } from './show-authed.directive';
     ArticleMetaComponent,
     ArticlePreviewComponent,
     ListErrorsComponent,
-    ShowAuthedDirective
+    ShowAuthedDirective,
+    AvatarFallbackDirective
   ],
   exports: [
     ArticleListComponent,
@@ -33,7 +35,8 @@ import { ShowAuthedDirective } from './show-authed.directive';
     HttpClientModule,
     ListErrorsComponent,
     RouterModule,
-    ShowAuthedDirective
+    ShowAuthedDirective,
+    AvatarFallbackDirective
   ]
 })
 export class SharedModule {}

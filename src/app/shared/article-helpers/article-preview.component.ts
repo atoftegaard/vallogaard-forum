@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { Article } from '../../core';
 
 @Component({
+  standalone: false,
   selector: 'app-article-preview',
   templateUrl: './article-preview.component.html',
   styleUrls: ['article-preview.component.css']

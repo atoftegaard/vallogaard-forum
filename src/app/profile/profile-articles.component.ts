@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ArticleListConfig, Profile } from '../core';
 
 @Component({
+  standalone: false,
   selector: 'app-profile-articles',
   templateUrl: './profile-articles.component.html'
 })

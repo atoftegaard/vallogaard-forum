@@ -3,6 +3,7 @@ import { Profile, UserService } from '../../core';
 import { AuthService } from '../../auth/auth.service';
 
 @Component({
+  standalone: false,
   selector: 'app-layout-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css']

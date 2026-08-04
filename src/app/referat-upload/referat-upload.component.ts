@@ -2,13 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { ImageService } from '../core/services/settings-file-upload.service';
 import { Referat } from '../core/models/referat.model';
-import { AngularFirestore } from '@angular/fire/firestore';
+import { Firestore, collection, addDoc } from '@angular/fire/firestore';
 
 class FileSnippet {
   constructor(public src: string, public file: File) {}
 }
 
 @Component({
+  standalone: false,
   selector: 'app-referat-upload',
   templateUrl: './referat-upload.component.html',
   styleUrls: ['./referat-upload.component.css']
@@ -23,7 +24,7 @@ export class ReferatUploadComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private imageService: ImageService,
-    private db: AngularFirestore) {
+    private firestore: Firestore) {
     this.settingsForm = this.fb.group({
       file: '',
       title: '',
@@ -43,7 +44,7 @@ export class ReferatUploadComponent implements OnInit {
     const reader = new FileReader();
     reader.addEventListener('load', (event: any) => {
       this.imageService.uploadImage(this.selectedFile.file).subscribe((url) => {
-        this.db.collection('referater').add({
+        addDoc(collection(this.firestore, 'referater'), {
           from: that.referat.from,
           title: that.referat.title,
           ref: url,

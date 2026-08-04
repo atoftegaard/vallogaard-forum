@@ -4,6 +4,7 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { HttpTokenInterceptor } from './interceptors/http.token.interceptor';
 
 import {
+  AdminGuard,
   ApiService,
   ArticlesService,
   AuthGuard,
@@ -20,6 +21,7 @@ import {
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: HttpTokenInterceptor, multi: true },
+    AdminGuard,
     ApiService,
     ArticlesService,
     AuthGuard,

@@ -1,11 +1,12 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { AngularFirestore } from '@angular/fire/firestore';
+import { Firestore, collection, collectionData, query, orderBy } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 import { Observable } from 'rxjs';
 import { Referat } from '../core/models/referat.model';
 
 @Component({
+  standalone: false,
   selector: 'app-referater-list',
   templateUrl: './referater-list.component.html',
   styleUrls: ['./referater-list.component.css']
@@ -13,7 +14,7 @@ import { Referat } from '../core/models/referat.model';
 export class ReferaterListComponent implements OnInit {
 
   constructor(
-    private db: AngularFirestore,
+    private firestore: Firestore,
     public router: Router,
     private authService: AuthService) { }
 
@@ -38,7 +39,8 @@ export class ReferaterListComponent implements OnInit {
       return;
     }
 
-    this.referater = this.db.collection<Referat>('referater', ref => ref.orderBy('from', 'desc')).valueChanges();
+    const q = query(collection(this.firestore, 'referater'), orderBy('from', 'desc'));
+    this.referater = collectionData(q) as Observable<Referat[]>;
     this.referater.subscribe(x => {
       this.loading = false;
     });

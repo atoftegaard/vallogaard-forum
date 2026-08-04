@@ -9,4 +9,5 @@ export interface Profile {
   notifyAboutNewComments: boolean;
   notifyAboutAnyComments: boolean;
   shareEmail: boolean;
+  disabled?: boolean;
 }
