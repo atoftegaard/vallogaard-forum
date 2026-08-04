@@ -23,7 +23,7 @@
 
             <fieldset class="form-group">
               <p style="text-align: center;">
-                <img [src]="profile.image" class="img-profile" *ngIf="!isLoadingImage" />
+                <img [src]="profile.image" [appAvatarFallback]="profile.name" class="img-profile" *ngIf="!isLoadingImage" />
                 <img src="assets/img/loading_large.gif" *ngIf="isLoadingImage" />
               </p>
               <div *ngIf="selectedFile" class="img-preview-container">

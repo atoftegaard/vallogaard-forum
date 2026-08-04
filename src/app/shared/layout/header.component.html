@@ -51,7 +51,15 @@
         <a class="nav-link"
           routerLink="/brugere"
           routerLinkActive="active">
-          <i class="ion-person-stalker"></i>&nbsp;Brugere
+          <i class="ion-person-stalker"></i>&nbsp;Brugeradministration
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link"
+          routerLink="/medlemmer"
+          routerLinkActive="active">
+          <i class="ion-person-stalker"></i>&nbsp;Brugere på forummet
         </a>
       </li>
 
@@ -59,7 +67,7 @@
         <a class="nav-link"
           [routerLink]="['/profile', currentUser.username]"
           routerLinkActive="active">
-          <img [src]="currentUser.image" *ngIf="currentUser.image" class="user-pic" />
+          <img [src]="currentUser.image" [appAvatarFallback]="currentUser.name" *ngIf="currentUser.image" class="user-pic" />
           {{ currentUser.username }}
         </a>
       </li>

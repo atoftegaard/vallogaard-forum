@@ -3,6 +3,7 @@ import { DatePipe } from '@angular/common';
 import { Dokument } from '../core/models/dokument.model';
 
 @Component({
+  standalone: false,
   selector: 'app-dokument-preview',
   templateUrl: './dokument-preview.component.html',
   styleUrls: ['./dokument-preview.component.css'],

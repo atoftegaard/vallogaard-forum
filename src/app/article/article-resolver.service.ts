@@ -1,5 +1,5 @@
 import { Injectable, } from '@angular/core';
-import { AngularFirestore } from '@angular/fire/firestore';
+import { Firestore, collection, collectionData, query, where } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { Article } from '../core';
 import { map, first } from 'rxjs/operators';
@@ -9,10 +9,10 @@ import { Resolve } from '@angular/router';
 
 @Injectable()
 export class ArticleResolver implements Resolve<Article> {
-  constructor(private db: AngularFirestore) {}
+  constructor(private firestore: Firestore) {}
 
   resolve(snapshot: TypedRouteSnapshot<Article, ArticleRoutePath>): Observable<Article> {
-    const collection = this.db.collection<Article>('articles', ref => ref.where('slug', '==', snapshot.params.slug));
-    return collection.valueChanges().pipe(first(), map(x => x[0]));
+    const q = query(collection(this.firestore, 'articles'), where('slug', '==', snapshot.params.slug));
+    return (collectionData(q) as Observable<Article[]>).pipe(first(), map(x => x[0]));
   }
 }

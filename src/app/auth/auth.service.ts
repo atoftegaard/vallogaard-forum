@@ -1,10 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { AngularFireAuth } from '@angular/fire/auth';
-import { User } from 'firebase/app';
+import {
+  Auth, onAuthStateChanged, signInWithEmailAndPassword, sendPasswordResetEmail, signOut, User,
+  setPersistence, browserLocalPersistence, browserSessionPersistence
+} from '@angular/fire/auth';
 import { Profile } from '../core/models/profile.model';
-import { AngularFirestore } from '@angular/fire/firestore';
-import { first, map } from 'rxjs/operators';
+import { Firestore, doc, docData } from '@angular/fire/firestore';
+import { Observable } from 'rxjs';
+import { first } from 'rxjs/operators';
 
 @Injectable({
   providedIn:  'root'
@@ -15,12 +18,12 @@ export  class  AuthService {
   isAdminPromise: Promise<boolean>;
 
   constructor(
-    public afAuth: AngularFireAuth,
+    public auth: Auth,
     public router: Router,
-    private db: AngularFirestore
+    private firestore: Firestore
   ) {
     this.isAdminPromise = new Promise<boolean>((resolve) => {
-      this.afAuth.onAuthStateChanged((user) => {
+      onAuthStateChanged(this.auth, (user) => {
         if (user) {
           this.user = user;
           this.updateProfile(resolve);
@@ -33,8 +36,7 @@ export  class  AuthService {
   }
 
   updateProfile(resolve: any) {
-    const collection = this.db.collection<Profile>('profiles', ref => ref.where('uid', '==', this.user.uid));
-    collection.valueChanges().pipe(first(), map(x => x[0])).subscribe(u => {
+    (docData(doc(this.firestore, 'profiles', this.user.uid)) as Observable<Profile>).pipe(first()).subscribe(u => {
       this.profile = u;
       if (resolve) {
         resolve(u.role === 'admin');
@@ -42,9 +44,13 @@ export  class  AuthService {
     });
   }
 
-  async login(email: string, password: string) {
+  // browserLocalPersistence survives closing the browser entirely; browserSessionPersistence
+  // is cleared when the tab/browser closes. Must be set before signing in - it only affects
+  // the session about to be created, not any already-active one.
+  async login(email: string, password: string, rememberMe: boolean = true) {
     try {
-      await this.afAuth.signInWithEmailAndPassword(email, password);
+      await setPersistence(this.auth, rememberMe ? browserLocalPersistence : browserSessionPersistence);
+      await signInWithEmailAndPassword(this.auth, email, password);
       setTimeout(() => {
         this.router.navigate(['/']);
       }, 50);
@@ -55,18 +61,18 @@ export  class  AuthService {
   }
 
   async reset(email: string) {
-    this.afAuth.sendPasswordResetEmail(email);
+    sendPasswordResetEmail(this.auth, email);
   }
 
   async logout() {
-    await this.afAuth.signOut();
+    await signOut(this.auth);
     localStorage.removeItem('user');
     this.router.navigate(['/login']);
   }
 
   async loggedIn() {
     return new Promise((resolve, reject) => {
-        const unsubscribe = this.afAuth.onAuthStateChanged(user => {
+        const unsubscribe = onAuthStateChanged(this.auth, user => {
           resolve(user);
         }, reject);
     });

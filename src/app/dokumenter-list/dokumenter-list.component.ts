@@ -1,13 +1,13 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { AngularFirestore } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 import { Observable } from 'rxjs';
 import { Dokument } from '../core/models/dokument.model';
-import * as firebase from 'firebase/app';
+import { Storage, StorageReference, ref, listAll, getMetadata, getDownloadURL } from '@angular/fire/storage';
 import { of } from 'rxjs';
 
 @Component({
+  standalone: false,
   selector: 'app-dokumenter-list',
   templateUrl: './dokumenter-list.component.html',
   styleUrls: ['./dokumenter-list.component.css']
@@ -15,7 +15,7 @@ import { of } from 'rxjs';
 export class DokumenterListComponent implements OnInit {
 
   constructor(
-    private db: AngularFirestore,
+    private storage: Storage,
     public router: Router,
     private authService: AuthService
   ) { }
@@ -41,10 +41,9 @@ export class DokumenterListComponent implements OnInit {
       return;
     }
 
-    const storageRef = firebase.storage().ref();
-    const listRef = storageRef.child('dokumenter');
+    const listRef = ref(this.storage, 'dokumenter');
     const that = this;
-    listRef.listAll().then(async function(res) {
+    listAll(listRef).then(async function(res) {
       const docs = await that.itemsToDokumenter(res.items);
       that.dokumenter = await of(docs);
       that.loading = false;
@@ -53,10 +52,10 @@ export class DokumenterListComponent implements OnInit {
     });
   }
 
-  itemsToDokumenter(items: firebase.storage.Reference[]): Promise<Dokument[]> {
+  itemsToDokumenter(items: StorageReference[]): Promise<Dokument[]> {
     return Promise.all(items.map(async (item) => {
-      const m = await item.getMetadata();
-      const u = await item.getDownloadURL();
+      const m = await getMetadata(item);
+      const u = await getDownloadURL(item);
       return {
         title: m.customMetadata?.title,
         filename: m.name,

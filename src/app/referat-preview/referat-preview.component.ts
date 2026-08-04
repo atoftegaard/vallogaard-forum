@@ -3,6 +3,7 @@ import { Referat } from '../core/models/referat.model';
 import { DatePipe } from '@angular/common';
 
 @Component({
+  standalone: false,
   selector: 'app-referat-preview',
   templateUrl: './referat-preview.component.html',
   styleUrls: ['./referat-preview.component.css'],

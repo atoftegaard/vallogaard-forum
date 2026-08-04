@@ -1,3 +1,5 @@
+import { StorageReference, getDownloadURL } from '@angular/fire/storage';
+
 export class EditorHelper {
 
   delay(t, v) {
@@ -6,12 +8,12 @@ export class EditorHelper {
     });
   }
 
-  keepTrying(triesRemaining, storageRef) {
+  keepTrying(triesRemaining: number, storageRef: StorageReference) {
     if (triesRemaining < 0) {
       return Promise.reject('out of tries');
     }
 
-    return storageRef.getDownloadURL().then((url) => {
+    return getDownloadURL(storageRef).then((url) => {
       return url;
     }).catch((error) => {
       switch (error.code) {

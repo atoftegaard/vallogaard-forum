@@ -1,1 +1,17 @@
 /* You can add global styles to this file, and also import other style files */
+
+/* Article/comment bodies are rendered via [innerHTML] from Quill-generated content,
+   so component-scoped styles can't reach them - keep embedded images within their card. */
+.article-content img,
+.card-text img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Google's reCAPTCHA v3 badge is injected directly into document.body, outside any
+   component's scoped CSS, so it can only be targeted globally. Hiding it is only allowed
+   under Google's terms if the required disclosure text is shown instead - see the
+   "beskyttet af reCAPTCHA" notice on the register form in auth.component.html. */
+.grecaptcha-badge {
+  visibility: hidden;
+}

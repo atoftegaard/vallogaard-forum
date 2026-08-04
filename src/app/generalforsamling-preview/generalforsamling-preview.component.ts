@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { AngularFirestore } from '@angular/fire/firestore';
+import { Firestore, doc, docData, updateDoc } from '@angular/fire/firestore';
 import { AuthService } from '../auth/auth.service';
 
 @Component({
+  standalone: false,
   selector: 'app-generalforsamling-preview',
   templateUrl: './generalforsamling-preview.component.html',
   styleUrls: ['./generalforsamling-preview.component.css']
@@ -18,7 +19,7 @@ export class GeneralforsamlingPreviewComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private db: AngularFirestore,
+    private firestore: Firestore,
     private authService: AuthService) {
     this.settingsForm = this.fb.group({
       date: null
@@ -33,7 +34,7 @@ export class GeneralforsamlingPreviewComponent implements OnInit {
     });
 
     const that = this;
-    this.db.collection('generalforsamling').doc('current').valueChanges().subscribe((g: any) => {
+    docData(doc(this.firestore, 'generalforsamling', 'current')).subscribe((g: any) => {
       that.date = new Date(g.date.seconds * 1000 + g.date.nanoseconds / 1000000);
       that.anyUpcoming = that.date >= new Date();
     });
@@ -42,8 +43,7 @@ export class GeneralforsamlingPreviewComponent implements OnInit {
   submitForm() {
     this.isSubmitting = true;
     const that = this;
-    that.db.collection('generalforsamling').doc('current')
-      .update({
+    updateDoc(doc(that.firestore, 'generalforsamling', 'current'), {
         date: new Date()
       }).then(x => {
         that.settingsForm.reset();

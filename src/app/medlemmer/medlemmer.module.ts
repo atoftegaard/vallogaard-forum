@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Routes, RouterModule } from '@angular/router';
-import { BrugereListComponent } from '../brugere-list/brugere-list.component';
-import { AdminGuard, AuthGuard } from '../core';
+import { MedlemmerListComponent } from '../medlemmer-list/medlemmer-list.component';
+import { AuthGuard } from '../core';
 
 const routes: Routes = [
-  { path: '', component: BrugereListComponent, canActivate: [AuthGuard, AdminGuard] }
+  { path: '', component: MedlemmerListComponent, canActivate: [AuthGuard] }
  ];
 
 @NgModule({
@@ -15,4 +15,4 @@ const routes: Routes = [
     RouterModule.forChild(routes)
   ]
 })
-export class BrugereModule { }
+export class MedlemmerModule { }

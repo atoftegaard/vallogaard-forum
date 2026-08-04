@@ -10,7 +10,6 @@ export interface Article {
   updatedAt?: Date;
   author?: Profile;
   sticky: boolean;
-  comments: SimpleProfile[];
   views: Map<string, SimpleProfile>;
   watchers: Map<string, SimpleProfile>;
 }

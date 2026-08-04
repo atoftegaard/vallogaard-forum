@@ -1,23 +1,26 @@
-import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Article } from '../core';
-import { AngularFirestore } from '@angular/fire/firestore';
+import { Firestore, collection, collectionData, doc, setDoc, query, where } from '@angular/fire/firestore';
+import { Observable } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
 import { first, map } from 'rxjs/operators';
-import { AngularFireFunctions } from '@angular/fire/functions';
-import { Editor } from 'primeng/editor';
+import { Functions, httpsCallable } from '@angular/fire/functions';
+import { Editor, EditorInitEvent } from 'primeng/editor';
+import 'quill-mention/autoregister';
 import * as uuid from 'uuid';
 import { EditorHelper } from '../shared/editor-helper';
-import * as firebase from 'firebase/app';
-import * as slug from 'slug';
+import { Storage, ref, uploadBytes } from '@angular/fire/storage';
+import slug from 'slug';
 import { SimpleProfile } from '../core/models/simple-profile.model';
 
 @Component({
+  standalone: false,
   selector: 'app-editor-page',
   templateUrl: './editor.component.html'
 })
-export class EditorComponent implements OnInit, AfterViewInit {
+export class EditorComponent implements OnInit {
   @ViewChild(Editor) editor: Editor;
 
   article: Article = {} as Article;
@@ -39,10 +42,11 @@ export class EditorComponent implements OnInit, AfterViewInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private db: AngularFirestore,
+    private firestore: Firestore,
     private fb: FormBuilder,
     private authService: AuthService,
-    private fns: AngularFireFunctions,
+    private fns: Functions,
+    private storage: Storage,
     private editorHelper: EditorHelper
   ) {
     // use the FormBuilder to create a form group
@@ -68,8 +72,8 @@ export class EditorComponent implements OnInit, AfterViewInit {
     });
   }
 
-  ngAfterViewInit() {
-    this.editor.quill.getModule('toolbar').addHandler('image', this.imageHandler.bind(this));
+  onEditorInit(event: EditorInitEvent) {
+    event.editor.getModule('toolbar').addHandler('image', this.imageHandler.bind(this));
   }
 
   async suggestPeople(searchTerm) {
@@ -99,17 +103,19 @@ export class EditorComponent implements OnInit, AfterViewInit {
         const file = input.files[0];
         const range = quill.getSelection(true);
         const fileName = uuid.v4();
-        const storageRef = firebase.storage().ref();
-        const imageRef = storageRef.child(fileName);
+        const imageRef = ref(that.storage, fileName);
 
         quill.insertEmbed(range.index, 'image', 'assets/img/loading_large.gif');
         quill.setSelection(range.index + 1);
 
-        imageRef.put(file).then(() => {
-          const lStorageRef = firebase.storage().ref().child(fileName + '_500x500');
+        uploadBytes(imageRef, file, { contentType: file.type }).then(() => {
+          const lStorageRef = ref(that.storage, fileName + '_500x500');
           that.editorHelper.keepTrying(10, lStorageRef).then((url) => {
             quill.deleteText(range.index, 1);
             quill.insertEmbed(range.index, 'image', url);
+          }).catch((error) => {
+            console.error('Error loading resized image: ', error);
+            quill.deleteText(range.index, 1);
           });
         });
       }
@@ -127,18 +133,18 @@ export class EditorComponent implements OnInit, AfterViewInit {
     this.article.author = this.authService.profile;
     const that = this;
 
-    const collection = this.db.collection<Article>('articles', ref => ref.where('slug', '==', this.article.slug));
-    collection.valueChanges().pipe(first(), map(x => x[0])).subscribe(a => {
+    const q = query(collection(this.firestore, 'articles'), where('slug', '==', this.article.slug));
+    (collectionData(q) as Observable<Article[]>).pipe(first(), map(x => x[0])).subscribe(a => {
       if (a) {
         that.error = 'Der findes allerede et opslag med samme navn, vælg venligst et andet';
         that.isSubmitting = false;
       } else {
         // post the changes
-        const articleRef = this.db.collection('articles').doc(this.article.slug);
+        const articleRef = doc(this.firestore, 'articles', this.article.slug);
 
-        articleRef.set(this.article, { merge: true }).then(() => {
+        setDoc(articleRef, this.article, { merge: true }).then(() => {
           that.router.navigateByUrl('/article/' + that.article.slug),
-          this.fns.httpsCallable('notifyNewArticle')({
+          httpsCallable(this.fns, 'notifyNewArticle')({
             'articlename': this.article.title,
             'articleurl': `${window.location.origin}/article/${this.article.slug}`,
             'authorname': this.article.author.name,
@@ -156,7 +162,6 @@ export class EditorComponent implements OnInit, AfterViewInit {
 
   updateArticle(values: Object) {
     Object.assign(this.article, values);
-    this.article.comments = [];
     this.article.views = {} as Map<string, SimpleProfile>;
     this.article.watchers = {} as Map<string, SimpleProfile>;
     this.article.body = this.editor.quill.root.innerHTML;

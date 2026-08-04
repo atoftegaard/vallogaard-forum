@@ -8,7 +8,7 @@
 
 <div class="container">
   <app-article-preview
-    *ngFor="let article of articles | async"
+    *ngFor="let article of articles | async; trackBy: trackBySlug"
     [article]="article">
   </app-article-preview>
 </div>

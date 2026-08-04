@@ -1,33 +1,35 @@
-import { Component, OnInit, Inject, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, Inject, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Article, Comment, Profile } from '../core';
 import { TypedRoute } from 'ngx-typed-router';
 import { ArticleRouteData } from './article-route-data';
 import { ArticleRoutePath } from './article-route-path';
-import { AngularFirestore } from '@angular/fire/firestore';
+import { Firestore, collection, collectionData, doc, updateDoc, addDoc, query, orderBy, where } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
-import * as firebase from 'firebase/app';
+import { Storage, ref, uploadBytes } from '@angular/fire/storage';
+import { Functions, httpsCallable } from '@angular/fire/functions';
 import * as uuid from 'uuid';
 import { DatePipe } from '@angular/common';
-import { Editor } from 'primeng/editor';
+import { Editor, EditorInitEvent } from 'primeng/editor';
 import { EditorHelper } from '../shared/editor-helper';
 import { SimpleProfile } from '../core/models/simple-profile.model';
-import { AngularFireFunctions } from '@angular/fire/functions';
 
 @Component({
+  standalone: false,
   selector: 'app-article-page',
   templateUrl: './article.component.html',
   providers: [DatePipe],
   styleUrls: ['./article.component.css']
 })
 
-export class ArticleComponent implements OnInit, AfterViewInit  {
+export class ArticleComponent implements OnInit  {
   @ViewChild(Editor) editor: Editor;
 
   constructor(@Inject(ActivatedRoute) private route: TypedRoute<ArticleRouteData, ArticleRoutePath>,
-    private db: AngularFirestore,
-    private fns: AngularFireFunctions,
+    private firestore: Firestore,
+    private storage: Storage,
+    private fns: Functions,
     private authService: AuthService,
     private editorHelper: EditorHelper
   ) { }
@@ -53,17 +55,19 @@ export class ArticleComponent implements OnInit, AfterViewInit  {
         const file = input.files[0];
         const range = quill.getSelection(true);
         const fileName = uuid.v4();
-        const storageRef = firebase.storage().ref();
-        const imageRef = storageRef.child(fileName);
+        const imageRef = ref(that.storage, fileName);
 
         quill.insertEmbed(range.index, 'image', 'assets/img/loading_large.gif');
         quill.setSelection(range.index + 1);
 
-        imageRef.put(file).then(() => {
-          const lStorageRef = firebase.storage().ref().child(fileName + '_500x500');
+        uploadBytes(imageRef, file, { contentType: file.type }).then(() => {
+          const lStorageRef = ref(that.storage, fileName + '_500x500');
           that.editorHelper.keepTrying(10, lStorageRef).then((url) => {
             quill.deleteText(range.index, 1);
             quill.insertEmbed(range.index, 'image', url);
+          }).catch((error) => {
+            console.error('Error loading resized image: ', error);
+            quill.deleteText(range.index, 1);
           });
         });
       }
@@ -74,8 +78,9 @@ export class ArticleComponent implements OnInit, AfterViewInit  {
     await this.authService.loggedIn();
 
     this.article = this.route.snapshot.data.article;
-    this.comments = this.db.collection<Comment>('comments', ref => ref.orderBy('createdAt', 'desc')
-      .where('slug', '==', this.route.snapshot.params.slug)).valueChanges();
+    const commentsQuery = query(collection(this.firestore, 'comments'),
+      orderBy('createdAt', 'desc'), where('slug', '==', this.route.snapshot.params.slug));
+    this.comments = collectionData(commentsQuery) as Observable<Comment[]>;
 
     await this.authService.isAdmin.then(x => {
       if (!this.article.views[this.authService.profile.uid]) {
@@ -84,16 +89,15 @@ export class ArticleComponent implements OnInit, AfterViewInit  {
             name: this.authService.profile.name,
             image: this.authService.profile.image
         } as SimpleProfile;
-        this.db.collection<Article>('articles').doc(this.article.slug)
-        .update({
+        updateDoc(doc(this.firestore, 'articles', this.article.slug), {
           views: this.article.views
         });
       }
     });
   }
 
-  ngAfterViewInit() {
-    this.editor.quill.getModule('toolbar').addHandler('image', this.imageHandler.bind(this));
+  onEditorInit(event: EditorInitEvent) {
+    event.editor.getModule('toolbar').addHandler('image', this.imageHandler.bind(this));
   }
 
   watchingAllowed() {
@@ -108,7 +112,7 @@ export class ArticleComponent implements OnInit, AfterViewInit  {
     this.isSubmitting = true;
     this.commentFormErrors = {};
     const that = this;
-    this.db.collection('comments').add({
+    addDoc(collection(this.firestore, 'comments'), {
         slug: this.article.slug,
         body: this.editor.quill.root.innerHTML,
         createdAt: new Date(),
@@ -123,16 +127,13 @@ export class ArticleComponent implements OnInit, AfterViewInit  {
           image: that.authService.profile.image
         } as SimpleProfile;
 
-        that.article.comments.push(simpleProfile);
         if (that.watchingAllowed()) {
           that.article.watchers[simpleProfile.uid] = simpleProfile;
         }
 
         that.commentContent = '';
-        that.db.collection<Article>('articles').doc(that.article.slug)
-          .update({
+        updateDoc(doc(that.firestore, 'articles', that.article.slug), {
             updatedAt: new Date(),
-            comments: that.article.comments,
             watchers: that.article.watchers
           }).then(x => {
             that.isSubmitting = false;
@@ -145,13 +146,13 @@ export class ArticleComponent implements OnInit, AfterViewInit  {
   }
 
   async notifyWatchers(slug, commentorUid, commentorName) {
-    const callable = this.fns.httpsCallable('notifyWatchers');
+    const callable = httpsCallable(this.fns, 'notifyWatchers');
     callable({
       'articleSlug': slug,
       'commentorUid': commentorUid,
       'commentorName': commentorName,
       'articleUrl': `${window.location.origin}/article/${slug}`
-    }).toPromise().then(res => {
+    }).then(res => {
 
     })
     .catch(er => {

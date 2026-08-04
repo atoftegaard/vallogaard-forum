@@ -38,7 +38,7 @@
             <form class="card comment-form" (ngSubmit)="addComment()">
               <fieldset [disabled]="isSubmitting">
                 <div class="card-block">
-                  <p-editor [(ngModel)]="commentContent" [style]="{'height':'320px'}" name="comment">
+                  <p-editor [(ngModel)]="commentContent" [style]="{'height':'320px'}" name="comment" (onEditorInit)="onEditorInit($event)">
                     <p-header>
                       <span class="ql-formats">
                         <select class="ql-size">

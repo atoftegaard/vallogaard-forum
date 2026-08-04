@@ -2,7 +2,7 @@
   "hosting": [
     {
       "target": "vallogaard",
-      "public": "dist",
+      "public": "dist/browser",
       "ignore": [
         "firebase.json",
         "**/.*",
@@ -17,10 +17,6 @@
     }
   ],
   "functions": {
-    "predeploy": [
-      "npm --prefix \"$RESOURCE_DIR\" run lint",
-      "npm --prefix \"$RESOURCE_DIR\" run build"
-    ],
     "source": "functions",
     "ignore": [
       "**/node_modules/**",
@@ -28,5 +24,29 @@
       "firebase-debug.log",
       "firebase-debug.*.log"
     ]
+  },
+  "storage": {
+    "rules": "storage.rules"
+  },
+  "firestore": {
+    "rules": "firestore.rules"
+  },
+  "emulators": {
+    "functions": {
+      "port": 5001
+    },
+    "storage": {
+      "port": 9199
+    },
+    "auth": {
+      "port": 9099
+    },
+    "firestore": {
+      "port": 8090
+    },
+    "ui": {
+      "enabled": true,
+      "port": 4000
+    }
   }
 }
