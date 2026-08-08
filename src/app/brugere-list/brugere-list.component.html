@@ -8,7 +8,7 @@
                   <span class="date"></span>
                   <span class="date" style="padding-top: 5px;"></span>
               </div>
-            </div>              
+            </div>
         </div>
     </div>
 
@@ -21,48 +21,63 @@
                     </a>
                 </div>
 
-                <table style="width: 100%" [hidden]="!brugere">
-                    <thead>
-                        <th>Navn</th>
-                        <th>Email</th>
-                        <th>Adresse</th>
-                        <th>Status</th>
-                        <th>Handlinger</th>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let bruger of brugere | async">
-                            <td>{{ bruger.name }}</td>
-                            <td><a href="mailto:{{ bruger.email }}">{{ bruger.email }}</a></td>
-                            <td>{{ bruger.address }}</td>
-                            <td>{{ isDisabled(bruger) ? 'Deaktiveret' : 'Aktiv' }}</td>
-                            <td>
-                                <div class="actions">
-                                    <button type="button" class="btn btn-sm btn-default"
-                                        [disabled]="busyUid === bruger.uid"
-                                        (click)="resetPassword(bruger)">
-                                        Nulstil kodeord
-                                    </button>
-                                    <button type="button" class="btn btn-sm {{ isDisabled(bruger) ? 'btn-success' : 'btn-warning' }}"
-                                        [disabled]="busyUid === bruger.uid"
-                                        (click)="toggleDisabled(bruger)">
-                                        {{ isDisabled(bruger) ? 'Aktiver' : 'Deaktiver' }}
-                                    </button>
-                                    <button type="button" class="btn btn-sm btn-danger"
-                                        [disabled]="busyUid === bruger.uid"
-                                        (click)="deleteUser(bruger)">
-                                        Slet
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                
+                <div class="bruger-list" [hidden]="!brugere">
+                    <div class="bruger-card" *ngFor="let bruger of brugere | async">
+                        <div class="bruger-card-header">
+                            <span class="bruger-name">{{ bruger.name }}</span>
+                            <span class="bruger-badge" [class.bruger-badge-disabled]="isDisabled(bruger)">
+                                {{ isDisabled(bruger) ? 'Deaktiveret' : 'Aktiv' }}
+                            </span>
+                        </div>
+
+                        <dl class="bruger-fields">
+                            <div class="bruger-field">
+                                <dt>Email</dt>
+                                <dd><a href="mailto:{{ bruger.email }}">{{ bruger.email }}</a></dd>
+                            </div>
+                            <div class="bruger-field">
+                                <dt>Adresse</dt>
+                                <dd>{{ bruger.address }}</dd>
+                            </div>
+                            <div class="bruger-field">
+                                <dt>Rolle</dt>
+                                <dd>
+                                    <select class="form-control role-select"
+                                        [disabled]="busyUid === bruger.uid || isSelf(bruger)"
+                                        [ngModel]="bruger.role"
+                                        (ngModelChange)="setRole(bruger, $event)">
+                                        <option value="user">Bruger</option>
+                                        <option value="admin">Administrator</option>
+                                    </select>
+                                </dd>
+                            </div>
+                        </dl>
+
+                        <div class="actions">
+                            <button type="button" class="btn btn-sm btn-default"
+                                [disabled]="busyUid === bruger.uid"
+                                (click)="resetPassword(bruger)">
+                                Nulstil kodeord
+                            </button>
+                            <button type="button" class="btn btn-sm {{ isDisabled(bruger) ? 'btn-success' : 'btn-warning' }}"
+                                [disabled]="busyUid === bruger.uid"
+                                (click)="toggleDisabled(bruger)">
+                                {{ isDisabled(bruger) ? 'Aktiver' : 'Deaktiver' }}
+                            </button>
+                            <button type="button" class="btn btn-sm btn-danger"
+                                [disabled]="busyUid === bruger.uid"
+                                (click)="deleteUser(bruger)">
+                                Slet
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="app-bruger-preview"
                     [hidden]="!loading">
                 Henter brugere...
                 </div>
-                
+
                 <div class="app-bruger-preview"
                     [hidden]="!(!loading && (brugere | async)?.length === 0)">
                     Der er endnu ikke nogle brugere.

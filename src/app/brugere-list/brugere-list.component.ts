@@ -1,11 +1,19 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Firestore, collection, collectionData, query, orderBy } from '@angular/fire/firestore';
-import { Functions, httpsCallableFromURL } from '@angular/fire/functions';
+import { Functions, httpsCallable, httpsCallableFromURL } from '@angular/fire/functions';
 import { Auth, sendPasswordResetEmail } from '@angular/fire/auth';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 import { Observable } from 'rxjs';
 import { Profile } from '../core';
+import { environment } from '../../environments/environment';
+
+// These callables act on real Firebase Auth accounts via the Admin SDK, so they must hit the
+// actually-deployed function - the local Functions emulator has no real Google Cloud credentials
+// and can't touch production Auth, regardless of environment.useEmulators. The URL is still built
+// from environment.firebaseConfig.projectId rather than a literal string, so it follows the
+// project id if the app is ever pointed at a different Firebase project.
+const CLOUD_FUNCTIONS_BASE_URL = `https://us-central1-${environment.firebaseConfig.projectId}.cloudfunctions.net`;
 
 @Component({
   standalone: false,
@@ -55,6 +63,10 @@ export class BrugereListComponent implements OnInit {
     this.loadAuthStatus();
   }
 
+  isSelf(bruger: Profile): boolean {
+    return bruger.uid === this.authService.user?.uid;
+  }
+
   isDisabled(bruger: Profile): boolean {
     // Fall back to the Firestore mirror only until the real Auth status has loaded,
     // to avoid a flash of "Aktiv" for everyone before the callable resolves.
@@ -67,7 +79,7 @@ export class BrugereListComponent implements OnInit {
   private async loadAuthStatus() {
     try {
       const callable = httpsCallableFromURL<void, { [uid: string]: boolean }>(
-        this.functions, 'https://us-central1-vallogaard-2019.cloudfunctions.net/listUserAuthStatus');
+        this.functions, `${CLOUD_FUNCTIONS_BASE_URL}/listUserAuthStatus`);
       const result = await callable();
       this.authStatus = result.data;
     } catch (error) {
@@ -88,19 +100,36 @@ export class BrugereListComponent implements OnInit {
     }
   }
 
-  // These act on real Firebase Auth accounts via the Admin SDK, so they must hit the
-  // actually-deployed function - the local Functions emulator has no real Google Cloud
-  // credentials and can't touch production Auth, regardless of environment.useEmulators.
   async toggleDisabled(bruger: Profile) {
     this.busyUid = bruger.uid;
     try {
       const callable = httpsCallableFromURL(
-        this.functions, 'https://us-central1-vallogaard-2019.cloudfunctions.net/setUserDisabled');
+        this.functions, `${CLOUD_FUNCTIONS_BASE_URL}/setUserDisabled`);
       await callable({ uid: bruger.uid, disabled: !this.isDisabled(bruger) });
       await this.loadAuthStatus();
     } catch (error) {
       console.error('Error updating user: ', error);
       alert('Kunne ikke opdatere brugeren.');
+    } finally {
+      this.busyUid = null;
+    }
+  }
+
+  async setRole(bruger: Profile, role: string) {
+    if (role === bruger.role) {
+      return;
+    }
+
+    this.busyUid = bruger.uid;
+    try {
+      // Unlike the Auth-touching callables below, this one only writes to Firestore, so it
+      // doesn't need to bypass the emulator - a plain name lookup (resolved via provideFunctions
+      // in app.module.ts, which respects environment.useEmulators) is enough.
+      const callable = httpsCallable(this.functions, 'setUserRole');
+      await callable({ uid: bruger.uid, role });
+    } catch (error) {
+      console.error('Error updating user role: ', error);
+      alert('Kunne ikke opdatere brugerens rolle.');
     } finally {
       this.busyUid = null;
     }
@@ -114,7 +143,7 @@ export class BrugereListComponent implements OnInit {
     this.busyUid = bruger.uid;
     try {
       const callable = httpsCallableFromURL(
-        this.functions, 'https://us-central1-vallogaard-2019.cloudfunctions.net/deleteUserAccount');
+        this.functions, `${CLOUD_FUNCTIONS_BASE_URL}/deleteUserAccount`);
       await callable({ uid: bruger.uid });
       await this.loadAuthStatus();
     } catch (error) {

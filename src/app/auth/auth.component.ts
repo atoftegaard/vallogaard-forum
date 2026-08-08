@@ -112,7 +112,6 @@ export class AuthComponent implements OnInit {
   sendApplicationNotification(name: string, email: string, address: string, recaptchaToken: string) {
     const callable = httpsCallable(this.fns, 'applyForUser');
     callable({
-      'destination': 'andreas@toftegaard.it',
       'name': name,
       'email': email,
       'address': address,
