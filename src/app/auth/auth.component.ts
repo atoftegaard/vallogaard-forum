@@ -116,8 +116,7 @@ export class AuthComponent implements OnInit {
       'name': name,
       'email': email,
       'address': address,
-      'recaptchaToken': recaptchaToken,
-      'brugereUrl': `${window.location.origin}/brugere`
+      'recaptchaToken': recaptchaToken
     }).then(res => {
       this.applied = true;
       this.isSubmitting = false;
