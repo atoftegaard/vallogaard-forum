@@ -2,21 +2,21 @@
   <div class="container page">
     <div class="row">
 
-      <div class="col-md-6 offset-md-3 col-xs-12" [hidden]="!applied">
+      <div class="col-md-12 offset-md-2 col-xs-12 auth-card" [hidden]="!applied">
         <h1 class="text-xs-center">Anmodningen blev sendt</h1>
-        <p class="text-xs-center">
+        <p class="text-xs-center auth-hint">
           Da dette er et lukket forum, skal alle anmodninger godkendes manuelt, inden log ind er muligt. Du vil modtage en email med yderligere informationer, såfremt din anmodning godkendes.
         </p>
       </div>
 
-      <div class="col-md-6 offset-md-3 col-xs-12" [hidden]="!resetComplete">
+      <div class="col-md-6 offset-md-3 col-xs-12 auth-card" [hidden]="!resetComplete">
         <h1 class="text-xs-center">Nulstillings-email afsendt</h1>
-        <p class="text-xs-center">
+        <p class="text-xs-center auth-hint">
           Hvis din angivne emailadresse kunne findes, er der nu blevet afsendt en email med yderligere information om nulstilling af kodeord. Der kan gå nogle få minutter inden den kommer, check dit spamfilter hvis den ikke modtages.
         </p>
       </div>
 
-      <div class="col-md-8 offset-md-2 col-xs-12">
+      <div class="col-md-12 offset-md-2 col-xs-12 auth-card">
         <form [formGroup]="authForm" (ngSubmit)="submitForm()">
           <h1 class="text-xs-center" [hidden]="applied || resetComplete">{{ title }}</h1>
           <app-list-errors [errors]="errors"></app-list-errors>
@@ -60,16 +60,16 @@
                     Forbliv logget ind
                   </label>
                 </fieldset>
-                <p *ngIf="authType == 'login'" style="color:#373a3c;">Hvis det er første gang du besøger denne side, skal du først anmode om adgang.</p>
-                <p *ngIf="authType == 'reset'" style="color:#373a3c;">Indtast den emailadresse du er oprettet med, i feltet ovenfor. <br>Når du efterfølgende trykker på knappen 'Nulstil kodeord', vil du på email modtage instrukser til angivelse af et nyt kodeord.</p>
-                <p *ngIf="authType == 'register'" style="color:#373a3c; font-size: 0.8em;">
+                <p *ngIf="authType == 'login'" class="auth-hint">Hvis det er første gang du besøger denne side, skal du først anmode om adgang.</p>
+                <p *ngIf="authType == 'reset'" class="auth-hint">Indtast den emailadresse du er oprettet med, i feltet ovenfor. <br>Når du efterfølgende trykker på knappen 'Nulstil kodeord', vil du på email modtage instrukser til angivelse af et nyt kodeord.</p>
+                <p *ngIf="authType == 'register'" class="auth-hint" style="font-size: 0.8em;">
                   Denne side er beskyttet af reCAPTCHA, og Googles
                   <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Privatlivspolitik</a> og
                   <a href="https://policies.google.com/terms" target="_blank" rel="noopener">Servicevilkår</a> gælder.
                 </p>
                 <p>
-                  <a [routerLink]="['/reset']" *ngIf="authType == 'login'" style="color: #373a3c">
-                    Klik her, hvis du har glemt dit kodeord
+                  <a [routerLink]="['/reset']" *ngIf="authType == 'login'" class="auth-hint">
+                    <i>Klik her, hvis du har glemt dit kodeord</i>
                   </a>
                 </p>
               </div>
@@ -77,8 +77,8 @@
                 <span>{{ title }}</span> <img src="assets/img/loading_large.gif" style="margin-left: 1em; height: 16px; width: 16px;" *ngIf="isSubmitting" />
               </button>
               <p class="text-xs-center">
-                <a [routerLink]="['/login']" *ngIf="authType != 'login'" class="btn btn-xs btn-info pull-xs-left authnav">Tilbage</a>
-                <a [routerLink]="['/register']" *ngIf="authType == 'login'" class="btn btn-xs btn-info pull-xs-left authnav">Anmod om adgang</a>
+                <a [routerLink]="['/login']" *ngIf="authType != 'login'" class="btn btn-xs btn-info pull-xs-left">Tilbage</a>
+                <a [routerLink]="['/register']" *ngIf="authType == 'login'" class="btn btn-xs btn-info pull-xs-left">Anmod om adgang</a>
               </p>
             </fieldset>
           <div *ngIf="loginError" class="text-danger pull-xs-right">Forkerte log ind-oplysninger, forsøg igen.</div>

@@ -1,46 +1,45 @@
-<div class="article-meta {{ bg ? 'bg' : '' }}">
-  <div>
-    <button type="button" class="btn btn-link" (click)="copyUrl()" style="float: right;margin:0.5em" *ngIf="showSticky">
-      <i class="ion-clipboard" style="font-size: 1.5em;" title="Kopier link til opslaget"></i>
+<div class="article-meta" [class.detail-bar]="showSticky">
+
+  <img [src]="article.author.image" [appAvatarFallback]="article.author.name" class="meta-avatar" *ngIf="showSticky" />
+
+  <div class="meta-body">
+    <div class="meta-who">
+      <span class="author" *ngIf="email">
+        Af <a href="mailto:{{email}}" class="comment-author-link">{{ article.author.name }}</a>
+      </span>
+      <span class="author" *ngIf="!email">Af {{ article.author.name }}</span>
+      <span class="meta-sep"></span>
+      <span class="date">{{ article.author.address }}</span>
+      <span class="meta-sep"></span>
+      <span class="date">{{ showSticky ? 'Oprettet d. ' : '' }}{{ toLongDate(article.createdAt) }}</span>
+    </div>
+
+    <div class="meta-sticky-note" *ngIf="showSticky && article.sticky">
+      <i class="ion-star"></i> Dette opslag fremhæves på forsiden
+    </div>
+
+    <div class="meta-stats" *ngIf="!showSticky">
+      <span class="stat" title="Set af {{ articleCount() }} {{ articleCount() === 1 ? 'person' : 'personer' }}">
+        <i class="ion-eye"></i> {{ articleCount() }}
+      </span>
+      <span class="stat" title="{{ commentCount || 'Ingen' }} {{ commentCount === 1 ? 'kommentar' : 'kommentarer' }}">
+        <i class="ion-chatbubbles"></i> {{ commentCount || 0 }}
+      </span>
+      <span class="meta-latest" *ngIf="commentCount > 0">Nyeste kommentar d. {{ toLongDate(article.updatedAt) }}</span>
+      <span class="meta-avatars" *ngIf="commenters.length">
+        <img *ngFor="let c of commenters" [src]="commenterImages[c.uid]" [appAvatarFallback]="c.name" class="img-small" [title]="c.name" />
+      </span>
+    </div>
+  </div>
+
+  <div class="meta-actions" *ngIf="showSticky">
+    <button type="button" class="meta-icon-btn" (click)="copyUrl()" title="Kopier link til opslaget">
+      <i class="ion-clipboard"></i>
     </button>
-  <div>
-    <button type="button" class="btn btn-link" (click)="watch(!isWatching())" style="float: right;margin:0.5em" *ngIf="showSticky && watchingAllowed()">
-      <i *ngIf="isWatching()" class="ion-eye-disabled" style="font-size: 1.5em;" title="Få ikke en notifikation, når dette opslag kommenteres"></i>
-      <i *ngIf="!isWatching()" class="ion-eye" style="font-size: 1.5em;" title="Få en notifikation, når dette opslag kommenteres"></i>
+    <button type="button" class="meta-icon-btn" (click)="watch(!isWatching())" *ngIf="watchingAllowed()">
+      <i *ngIf="isWatching()" class="ion-eye-disabled" title="Få ikke en notifikation, når dette opslag kommenteres"></i>
+      <i *ngIf="!isWatching()" class="ion-eye" title="Få en notifikation, når dette opslag kommenteres"></i>
     </button>
   </div>
 
-  <img [src]="article.author.image" [appAvatarFallback]="article.author.name" />
-
-  <div class="info">
-    <span class="author" *ngIf="email">
-      Af <a href="mailto:{{email}}" style="color:inherit">{{ article.author.name }}</a>
-    </span>
-    <span class="author" *ngIf="!email">
-      Af {{ article.author.name }}
-    </span>
-    <span class="date">
-      {{ article.author.address }}
-    </span>
-    <span class="date">
-      Oprettet d. {{ toLongDate(article.createdAt) }}
-    </span>
-    <i *ngIf="showSticky && article.sticky" class="ion-star sticky date" style="padding-top: 5px;"> Dette opslag fremhæves på forsiden</i>
-  </div>
-
-  <div class="info" *ngIf="!showSticky">
-    <span class="date" style="margin-top: 1em">
-      Set af <i>{{ articleCount() }}</i> {{ articleCount() === 1 ? 'person' : 'personer' }}
-    </span>
-    <span class="date">
-      {{ commentCount || 'Ingen' }} {{ commentCount === 1 ? 'kommentar' : 'kommentarer' }}
-    </span>
-  </div>
-
-  <div class="info" *ngIf="!showSticky">
-    <span class="date" *ngIf="commentCount > 0" style="margin-top: 2.1em">
-      Nyeste kommentar d. {{ toLongDate(article.updatedAt) }}
-    </span>
-    <img *ngFor="let c of commenters" [src]="commenterImages[c.uid]" [appAvatarFallback]="c.name" class="img-small" [title]="c.name" />
-  </div>
 </div>

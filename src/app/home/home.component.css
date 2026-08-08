@@ -7,9 +7,5 @@
 }
 
 .page-wrapper {
-  background-color: white;
-}
-
-.banner {
-  background-color: #333;
+  background-color: var(--vg-bg);
 }

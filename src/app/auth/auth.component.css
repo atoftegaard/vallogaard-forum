@@ -1,14 +1,30 @@
 .auth-page {
-    background-color: rgba(255, 255, 255, 0.6);
-    padding: 1em 0 2em 0;
-    margin-top: 2em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 6rem);
+    padding: 2em 1em;
 }
 
-.authnav {
-    color: black;
+.auth-page .container {
+    max-width: 480px;
 }
 
-.btn-info {
-    background-color: transparent;
-    border: black 1px solid;
+.auth-card {
+    background-color: rgba(38, 43, 51, 0.82);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--vg-radius-lg, 18px);
+    padding: 2.25em 2em 2em;
+    box-shadow: 0 20px 45px -20px rgba(0, 0, 0, .6);
+}
+
+.auth-card h1 {
+    color: var(--vg-ink, #ede9e0);
+    margin-bottom: 1em;
+}
+
+.auth-hint {
+    color: var(--vg-muted, #9aa0a8);
 }

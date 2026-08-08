@@ -15,3 +15,277 @@
 .grecaptcha-badge {
   visibility: hidden;
 }
+
+/* =========================================================================
+   "Nabolag" theme - dark, warm, informal community-board look.
+   The old Bootstrap 4-alpha stylesheet (assets/index.css) is still loaded via
+   a plain <link> ahead of this file, so equal-specificity rules here win by
+   cascade order. A handful of component .css files re-declare the same
+   classes with higher (view-encapsulation) specificity - those are edited
+   in place rather than fought with !important.
+   ========================================================================= */
+:root {
+  --vg-bg: #20242b;
+  --vg-surface: #262b33;
+  --vg-surface-2: #2f3540;
+  --vg-ink: #ede9e0;
+  --vg-muted: #9aa0a8;
+  --vg-line: #3a4048;
+  --vg-accent: #d99a3d;
+  --vg-accent-hover: #e6ab52;
+  --vg-accent-ink: #241a08;
+  --vg-accent-2: #7c93a8;
+  --vg-radius-lg: 18px;
+  --vg-radius-md: 12px;
+  --vg-radius-sm: 8px;
+  --vg-font-display: 'Titillium Web', 'Segoe UI', Arial, sans-serif;
+  --vg-font-body: 'Source Sans Pro', 'Segoe UI', Arial, sans-serif;
+}
+
+html, body {
+  background: var(--vg-bg);
+  color: var(--vg-ink);
+  font-family: var(--vg-font-body);
+}
+
+a { color: var(--vg-accent); }
+a:hover, a:focus { color: var(--vg-accent-hover); }
+
+h1, h2, h3, h4, h5, h6, .logo-font {
+  font-family: var(--vg-font-display);
+}
+
+hr { border-top-color: var(--vg-line) !important; }
+
+input[type="checkbox"] { accent-color: var(--vg-accent); }
+
+/* ---- header / nav ---- */
+nav.navbar {
+  background: var(--vg-surface) !important;
+  border-bottom: 1px solid var(--vg-line);
+  padding: 0.85rem 0;
+}
+a.navbar-brand {
+  color: var(--vg-ink) !important;
+  font-family: var(--vg-font-display);
+  font-weight: 700;
+  letter-spacing: .03em;
+  text-transform: uppercase;
+}
+.navbar-light .navbar-nav .nav-link,
+nav .nav-link {
+  color: var(--vg-muted) !important;
+}
+.navbar-light .navbar-nav .nav-link:hover,
+nav .nav-link:hover {
+  color: var(--vg-ink) !important;
+}
+nav .nav-link.active {
+  color: var(--vg-accent) !important;
+  font-weight: 600;
+}
+.user-pic {
+  border-radius: 50%;
+  border: 2px solid var(--vg-accent);
+  height: 26px;
+  width: 26px;
+  object-fit: cover;
+}
+
+/* ---- page banners ---- */
+.banner {
+  background: linear-gradient(180deg, var(--vg-surface), var(--vg-bg)) !important;
+  color: var(--vg-ink) !important;
+  box-shadow: none !important;
+  border-bottom: 1px solid var(--vg-line);
+  padding: 2.25rem 0 1.5rem !important;
+}
+.banner h1 { font-size: 1.9rem; margin-bottom: .25rem; }
+.banner p { color: var(--vg-muted); margin: 0; }
+
+/* ---- footer ---- */
+footer {
+  background: var(--vg-surface) !important;
+  color: var(--vg-muted) !important;
+  border-top: 1px solid var(--vg-line);
+  box-shadow: none !important;
+}
+footer a { color: var(--vg-muted); }
+footer a:hover { color: var(--vg-accent); }
+
+/* ---- cards / list rows shared across forsiden, referater, dokumenter ---- */
+.article-preview {
+  background: var(--vg-surface);
+  border: 1px solid var(--vg-line) !important;
+  border-radius: var(--vg-radius-md) !important;
+  padding: .75rem .9rem;
+  margin-bottom: .6em;
+  transition: border-color .15s ease;
+}
+.article-preview:hover { border-color: var(--vg-accent-2) !important; }
+.article-preview h1, .article-preview h3 { margin-top: 0; }
+.preview-link, .preview-link:hover, .preview-link:focus { color: var(--vg-ink); }
+.article-preview.sticky { border-left: 3px solid var(--vg-accent) !important; }
+.rule { border-top-color: var(--vg-line) !important; }
+
+/* ---- generalforsamling announcement stripe ---- */
+.wrapper {
+  background: repeating-linear-gradient(45deg, var(--vg-accent), var(--vg-accent) 10px, var(--vg-accent-hover) 10px, var(--vg-accent-hover) 20px) !important;
+  color: var(--vg-accent-ink) !important;
+}
+
+/* ---- buttons ---- */
+.btn {
+  border-radius: var(--vg-radius-sm);
+  font-weight: 600;
+  letter-spacing: .01em;
+}
+.btn-primary {
+  background-color: var(--vg-accent) !important;
+  border-color: var(--vg-accent) !important;
+  color: var(--vg-accent-ink) !important;
+}
+.btn-primary:hover, .btn-primary:focus {
+  background-color: var(--vg-accent-hover) !important;
+  border-color: var(--vg-accent-hover) !important;
+}
+.btn-info {
+  background-color: transparent !important;
+  border-color: var(--vg-accent-2) !important;
+  color: var(--vg-accent-2) !important;
+}
+.btn-info:hover {
+  background-color: var(--vg-accent-2) !important;
+  color: var(--vg-bg) !important;
+}
+.btn-outline-secondary {
+  border-color: var(--vg-line) !important;
+  color: var(--vg-muted) !important;
+}
+.btn-outline-secondary:hover {
+  border-color: var(--vg-accent) !important;
+  color: var(--vg-ink) !important;
+}
+.btn-default {
+  background-color: var(--vg-surface-2) !important;
+  border-color: var(--vg-line) !important;
+  color: var(--vg-ink) !important;
+}
+.btn-success { background-color: #4f9d6e !important; border-color: #4f9d6e !important; }
+.btn-warning { background-color: #c98a3e !important; border-color: #c98a3e !important; color: #241a08 !important; }
+.btn-danger { background-color: #b1594f !important; border-color: #b1594f !important; }
+.btn-link { color: var(--vg-accent) !important; }
+
+/* ---- forms ---- */
+fieldset.form-group > span:first-child {
+  display: block;
+  margin-bottom: .4em;
+  font-size: .8rem;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--vg-muted);
+  font-weight: 600;
+}
+.form-control {
+  background-color: var(--vg-surface-2) !important;
+  border: 1px solid var(--vg-line) !important;
+  color: var(--vg-ink) !important;
+  border-radius: var(--vg-radius-sm) !important;
+}
+.form-control::placeholder { color: var(--vg-muted); opacity: 1; }
+.form-control:focus {
+  border-color: var(--vg-accent) !important;
+  box-shadow: 0 0 0 3px rgba(217, 154, 61, .22) !important;
+  outline: none;
+}
+
+/* ---- tables (medlemmer, brugere) ---- */
+table { color: var(--vg-ink); }
+th { color: var(--vg-muted); text-transform: uppercase; font-size: .78rem; letter-spacing: .03em; }
+
+/* ---- generic cards (comments, comment form) ---- */
+.card {
+  background-color: var(--vg-surface) !important;
+  border: 1px solid var(--vg-line) !important;
+  box-shadow: none !important;
+  border-radius: var(--vg-radius-md) !important;
+}
+.card-block { background: transparent !important; }
+.card-footer {
+  background-color: var(--vg-surface-2) !important;
+  border-color: var(--vg-line) !important;
+}
+.mod-options { color: var(--vg-muted) !important; cursor: pointer; }
+.mod-options:hover { color: #d97a6a !important; }
+.comment-author-link { color: var(--vg-ink) !important; }
+.comment-author-link:hover { color: var(--vg-accent) !important; }
+
+/* ---- profile page ---- */
+.user-info { background: var(--vg-surface) !important; }
+.nav-pills.outline-active .nav-link { color: var(--vg-muted) !important; }
+.nav-pills.outline-active .nav-link:hover { color: var(--vg-ink) !important; }
+.nav-pills.outline-active .nav-link.active {
+  background: transparent !important;
+  border-bottom: 2px solid var(--vg-accent) !important;
+  color: var(--vg-accent) !important;
+}
+.action-btn { color: var(--vg-muted) !important; border-color: var(--vg-line) !important; }
+.user-img, .img-profile {
+  border-radius: 50%;
+  border: 3px solid var(--vg-accent);
+  object-fit: cover;
+}
+
+/* ---- quill editor (wrapped by PrimeNG's p-editor, which injects its own
+   light-theme background via component-scoped CSS loaded after this file -
+   !important is needed to reliably win) ---- */
+.p-editor-container .p-editor-toolbar,
+.ql-toolbar.ql-snow {
+  background: var(--vg-surface-2) !important;
+  border-color: var(--vg-line) !important;
+  border-top-left-radius: var(--vg-radius-sm);
+  border-top-right-radius: var(--vg-radius-sm);
+}
+.p-editor-container .p-editor-content,
+.ql-container.ql-snow {
+  background: var(--vg-surface) !important;
+  color: var(--vg-ink) !important;
+  border-color: var(--vg-line) !important;
+  border-bottom-left-radius: var(--vg-radius-sm);
+  border-bottom-right-radius: var(--vg-radius-sm);
+}
+.p-editor-content .ql-editor,
+.ql-editor {
+  background: var(--vg-surface) !important;
+  color: var(--vg-ink) !important;
+}
+.ql-editor.ql-blank::before { color: var(--vg-muted) !important; }
+.ql-snow .ql-stroke { stroke: var(--vg-ink); }
+.ql-snow .ql-fill { fill: var(--vg-ink); }
+.ql-snow .ql-picker { color: var(--vg-ink); }
+.ql-snow .ql-picker-options {
+  background: var(--vg-surface-2) !important;
+  border-color: var(--vg-line) !important;
+}
+.ql-snow .ql-picker.ql-expanded .ql-picker-label {
+  border-color: var(--vg-line) !important;
+  color: var(--vg-ink);
+}
+.ql-snow .ql-tooltip {
+  background: var(--vg-surface-2) !important;
+  border-color: var(--vg-line) !important;
+  color: var(--vg-ink) !important;
+  box-shadow: 0 8px 20px -8px rgba(0, 0, 0, .5) !important;
+}
+.ql-snow .ql-tooltip input[type="text"] {
+  background: var(--vg-surface) !important;
+  border: 1px solid var(--vg-line) !important;
+  color: var(--vg-ink) !important;
+}
+.ql-snow .ql-tooltip a.ql-action, .ql-snow .ql-tooltip a.ql-remove {
+  color: var(--vg-accent) !important;
+}
+
+/* ---- feedback text ---- */
+.text-danger, .error-messages { color: #e2897a !important; }
+.text-success { color: #7fbf9a !important; }

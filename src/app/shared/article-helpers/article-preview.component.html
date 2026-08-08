@@ -1,9 +1,12 @@
 <a [routerLink]="['/article', article.slug]" class="preview-link">
-  <div class="article-preview row {{ article.sticky ? 'sticky' : '' }}">
-    <div class="col-md-12" style="width:100%">
-      <h3>{{ article.title }}</h3>
-      <span style="color: #bbb">Klik her, for at læse opslaget</span>
-      <app-article-meta [article]="article" [bg]="true"></app-article-meta>
+  <div class="article-preview {{ article.sticky ? 'sticky' : '' }}">
+    <img [src]="article.author.image" [appAvatarFallback]="article.author.name" class="preview-avatar" />
+    <div class="preview-body">
+      <div class="preview-top">
+        <h3>{{ article.title }}</h3>
+        <span class="preview-pin" *ngIf="article.sticky">Fastgjort</span>
+      </div>
+      <app-article-meta [article]="article"></app-article-meta>
     </div>
   </div>
 </a>

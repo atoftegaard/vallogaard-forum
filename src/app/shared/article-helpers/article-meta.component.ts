@@ -17,7 +17,6 @@ export class ArticleMetaComponent implements OnChanges {
   email: string;
   @Input() article: Article;
   @Input() showSticky: boolean;
-  @Input() bg: string;
 
   constructor(@Inject(DOCUMENT) private document: Document,
     private firestore: Firestore,

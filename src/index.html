@@ -33,11 +33,14 @@
     <h1>Javascript skal være slået til!</h1>
   </noscript>
   <style>
+    body {
+      background: #20242b;
+    }
     .body-bg {
-        background: url('/assets/img/background.png') no-repeat top center fixed;
-        -webkit-background-size: cover;
-        -moz-background-size: cover;
-        -o-background-size: cover;
+        background-image: linear-gradient(200deg, rgba(20, 16, 10, .35), rgba(18, 20, 25, .88)), url('/assets/img/background.png');
+        background-repeat: no-repeat;
+        background-position: top center;
+        background-attachment: fixed;
         background-size: cover;
     }
   </style>

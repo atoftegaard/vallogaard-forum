@@ -237,11 +237,12 @@ exports.applyForUser = functions.https.onRequest((req: any, res: any) => {
               .then(() => {
                 console.log('profile added');
                 const dest = req.body.data.destination;
+                const brugereUrl = req.body.data.brugereUrl;
                 const mailOptions = {
                     from: 'Valløgård Forum <noreply@vallogaard.dk>',
                     to: dest,
                     subject: 'Anmodning om brugeroprettelse',
-                    html: `Der er kommet en anmodning om brugeroprettelse fra "` + name + `" - check <a href="https://console.firebase.google.com/project/vallogaard-2019/database/firestore/data~2Fprofiles">https://console.firebase.google.com/project/vallogaard-2019/database/firestore/data~2Fprofiles</a>`
+                    html: `Der er kommet en anmodning om brugeroprettelse fra "` + name + `" - check <a href="${brugereUrl}">${brugereUrl}</a>`
                 };
 
                 // The account and profile are already created at this point - a failed

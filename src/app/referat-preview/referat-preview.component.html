@@ -1,8 +1,13 @@
 <div class="article-preview row">
-    <div class="col-xs-8">
+    <div class="col-md-7" style="padding-right:1em">
       <a [attr.href]="[referat.ref]" class="preview-link">
-        <h1>{{ referat.title }} - {{ toLongDate(referat.from) }}</h1>
-        <span>Klik her, for at læse referatet...</span>
+        {{ referat.title }}
       </a>
+    </div>
+    <div class="col-md-3" style="padding-right:1em">
+         {{ toLongDate(referat.from) }}
+    </div>
+    <div class="col-md-2">
+        
     </div>
 </div>
