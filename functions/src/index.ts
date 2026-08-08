@@ -100,6 +100,27 @@ exports.setUserDisabled = functions.https.onCall(async (data: any, context: func
     return { success: true };
 });
 
+exports.setUserRole = functions.https.onCall(async (data: any, context: functions.https.CallableContext) => {
+    await assertIsAdmin(context);
+    const uid: string = data.uid;
+    const role: string = data.role;
+    if (!uid) {
+        throw new functions.https.HttpsError('invalid-argument', 'uid mangler.');
+    }
+    if (role !== 'admin' && role !== 'user') {
+        throw new functions.https.HttpsError('invalid-argument', 'role skal være "admin" eller "user".');
+    }
+    // Without this check an admin could remove their own admin role and lock everyone
+    // (including themselves) out of the /brugere page, since AdminGuard requires it.
+    if (uid === context.auth!.uid) {
+        throw new functions.https.HttpsError('failed-precondition', 'Du kan ikke ændre din egen rolle.');
+    }
+
+    await db.collection('profiles').doc(uid).update({ role });
+
+    return { success: true };
+});
+
 // Firestore has no visibility into Auth records at all, and the "disabled" field mirrored
 // onto the profile doc can drift (e.g. applyForUser creates the Auth user as disabled but
 // never sets it on the profile). This is the only way to get the real, current value.
@@ -242,13 +263,24 @@ exports.applyForUser = functions.https.onRequest((req: any, res: any) => {
                 'uid': userRecord.uid,
                 'role': 'user'
               })
-              .then(() => {
+              .then(async () => {
                 console.log('profile added');
-                const dest = req.body.data.destination;
                 const brugereUrl = `${APP_BASE_URL}/brugere`;
+
+                // Recipients are looked up server-side, not taken from the request - the same
+                // reasoning as APP_BASE_URL above: a client-supplied "destination" would let a
+                // caller redirect this notification to an arbitrary address instead of the admins.
+                const adminsSnap = await db.collection('profiles').where('role', '==', 'admin').get();
+                const adminEmails = adminsSnap.docs.map((doc: any) => doc.data().email).filter(Boolean);
+
+                if (adminEmails.length === 0) {
+                    console.log('applyForUser: no admins with an email to notify');
+                    return res.status(200).send({ data: 'OK' });
+                }
+
                 const mailOptions = {
                     from: 'Valløgård Forum <noreply@vallogaard.dk>',
-                    to: dest,
+                    to: adminEmails,
                     subject: 'Anmodning om brugeroprettelse',
                     html: `Der er kommet en anmodning om brugeroprettelse fra "` + name + `" - check <a href="${brugereUrl}">${brugereUrl}</a>`
                 };

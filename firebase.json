@@ -3,6 +3,9 @@
     {
       "target": "vallogaard",
       "public": "dist/browser",
+      "predeploy": [
+        "npm run build"
+      ],
       "ignore": [
         "firebase.json",
         "**/.*",
