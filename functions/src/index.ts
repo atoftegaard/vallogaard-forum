@@ -21,6 +21,14 @@ const auth = getAuth();
 
 const RESIZE_SUFFIX = '_500x500';
 
+// The app's own public URL for links embedded in emails. Derived from the function's own
+// runtime, never from client-supplied request data - the client making the request isn't
+// necessarily the same audience as the email recipient (e.g. an admin notification), and a
+// URL built from unvalidated input would let a caller inject an arbitrary link into the mail.
+// FUNCTIONS_EMULATOR is set by the Firebase Emulator Suite itself, not by any caller, so it's
+// safe to trust for telling local testing apart from a real deployment.
+const APP_BASE_URL = process.env.FUNCTIONS_EMULATOR === 'true' ? 'http://localhost:4200' : 'https://vallogaard.dk';
+
 // Replaces the deprecated "Resize Images" Firebase Extension. Triggers on every upload;
 // skips its own output (files already ending in RESIZE_SUFFIX) to avoid re-triggering itself.
 // Deployed to europe-west1 because the default storage bucket is in the "eu" multi-region -
@@ -237,11 +245,12 @@ exports.applyForUser = functions.https.onRequest((req: any, res: any) => {
               .then(() => {
                 console.log('profile added');
                 const dest = req.body.data.destination;
+                const brugereUrl = `${APP_BASE_URL}/brugere`;
                 const mailOptions = {
                     from: 'Valløgård Forum <noreply@vallogaard.dk>',
                     to: dest,
                     subject: 'Anmodning om brugeroprettelse',
-                    html: `Der er kommet en anmodning om brugeroprettelse fra "` + name + `" - check <a href="https://console.firebase.google.com/project/vallogaard-2019/database/firestore/data~2Fprofiles">https://console.firebase.google.com/project/vallogaard-2019/database/firestore/data~2Fprofiles</a>`
+                    html: `Der er kommet en anmodning om brugeroprettelse fra "` + name + `" - check <a href="${brugereUrl}">${brugereUrl}</a>`
                 };
 
                 // The account and profile are already created at this point - a failed

@@ -8,7 +8,7 @@
     </span>
     &nbsp;
     <span class="comment-author" *ngIf="email">
-      <a href="mailto:{{email}}" style="color:black">{{ comment.author.name }}</a>
+      <a href="mailto:{{email}}" class="comment-author-link">{{ comment.author.name }}</a>
     </span>
     <span class="comment-author" *ngIf="!email">
       {{ comment.author.name }}
