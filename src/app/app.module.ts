@@ -28,6 +28,7 @@ import { DokumentPreviewComponent } from './dokument-preview/dokument-preview.co
 import { NgxFilesizeModule } from 'ngx-filesize';
 import { DokumenterUploadComponent } from './dokumenter-upload/dokumenter-upload.component';
 import { GeneralforsamlingPreviewComponent } from './generalforsamling-preview/generalforsamling-preview.component';
+import { LejlighedsoverblikListComponent } from './lejlighedsoverblik-list/lejlighedsoverblik-list.component';
 
 registerLocaleData(localeDa);
 
@@ -59,7 +60,8 @@ const cookieConfig: NgcCookieConsentConfig = {
           DokumenterListComponent,
           DokumentPreviewComponent,
           DokumenterUploadComponent,
-          GeneralforsamlingPreviewComponent],
+          GeneralforsamlingPreviewComponent,
+          LejlighedsoverblikListComponent],
   imports: [
     BrowserModule,
     EditorModule,

@@ -21,6 +21,8 @@ export class AuthComponent implements OnInit {
   applied = false;
   applyError = false;
   authForm: FormGroup;
+  lejlighedAdresser: { nummer: string; adresse: string }[] = [];
+  loadingAdresser = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -47,7 +49,7 @@ export class AuthComponent implements OnInit {
         this.title = 'LOG IND';
       }
       if (this.authType === 'register') {
-        this.title = 'ANMOD';
+        this.title = 'ANMOD OM ADGANG';
       }
       if (this.authType === 'reset') {
         this.title = 'NULSTIL KODEORD';
@@ -55,13 +57,27 @@ export class AuthComponent implements OnInit {
       // add form control for username if this is the register page
       if (this.authType === 'register') {
         this.authForm.addControl('username', new FormControl());
-        this.authForm.addControl('address', new FormControl());
+        this.authForm.addControl('address', new FormControl('', Validators.required));
+        this.loadLejlighedAdresser();
       } else {
         this.authForm.addControl('password', new FormControl());
       }
       if (this.authType === 'login') {
         this.authForm.addControl('rememberMe', new FormControl(true));
       }
+    });
+  }
+
+  loadLejlighedAdresser() {
+    this.loadingAdresser = true;
+    const callable = httpsCallable<void, { nummer: string; adresse: string }[]>(this.fns, 'listLejlighedAdresser');
+    callable().then(res => {
+      this.lejlighedAdresser = res.data;
+      this.loadingAdresser = false;
+    })
+    .catch(er => {
+      console.error('Error loading lejlighed adresser: ', er);
+      this.loadingAdresser = false;
     });
   }
 

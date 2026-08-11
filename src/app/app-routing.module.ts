@@ -29,6 +29,10 @@ const routes: Routes = [
   {
     path: 'dokumenter',
     loadChildren: () => import('./dokumenter/dokumenter.module').then(m => m.DokumenterModule)
+  },
+  {
+    path: 'lejlighedsoverblik',
+    loadChildren: () => import('./lejlighedsoverblik/lejlighedsoverblik.module').then(m => m.LejlighedsoverblikModule)
   }
 ];
 

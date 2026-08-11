@@ -1,5 +1,1 @@
-export interface SimpleProfile {
-  uid: string;
-  name: string;
-  image: string;
-}
+export * from '../../../../shared/models/simple-profile.model';

@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "vallogaard-serve",
+      "runtimeExecutable": "C:\\nvm4w\\nodejs\\node.exe",
+      "runtimeArgs": ["node_modules/@angular/cli/bin/ng.js", "serve"],
+      "port": 4200
+    }
+  ]
+}

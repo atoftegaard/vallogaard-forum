@@ -25,7 +25,9 @@
               "firebase-functions",
               "@firebase/firestore",
               "@firebase/functions",
-              "@firebase/component"
+              "@firebase/component",
+              "filesize",
+              "quill-delta"
             ],
             "assets": [
               "src/assets",
@@ -42,11 +44,23 @@
             ],
             "scripts": [
               "./node_modules/cookieconsent/build/cookieconsent.min.js"
-            ]
+            ],
+            "optimization": {
+              "styles": {
+                "inlineCritical": false
+              }
+            }
           },
           "configurations": {
             "production": {
-              "optimization": true,
+              "optimization": {
+                "scripts": true,
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": false
+                },
+                "fonts": true
+              },
               "outputHashing": "all",
               "sourceMap": false,
               "namedChunks": false,
@@ -59,7 +73,14 @@
               ]
             },
             "test": {
-              "optimization": true,
+              "optimization": {
+                "scripts": true,
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": false
+                },
+                "fonts": true
+              },
               "outputHashing": "all",
               "sourceMap": false,
               "namedChunks": false,
