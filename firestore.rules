@@ -7,6 +7,14 @@ service cloud.firestore {
       allow write: if request.auth != null && get(/databases/$(database)/documents/profiles/$(request.auth.uid)).data.role == 'admin';
     }
 
+    match /lejligheder/{lejlighed} {
+      // update only, not create/delete - the app never adds or removes apartments, this is a
+      // fixed set that only gets edited in place, and that's enforced here rather than just
+      // in the UI, since client-side controls can be bypassed by calling Firestore directly.
+      allow read: if request.auth != null;
+      allow update: if request.auth != null && get(/databases/$(database)/documents/profiles/$(request.auth.uid)).data.role == 'admin';
+    }
+
     match /generalforsamling/{id} {
       allow read: if request.auth != null;
       allow write: if request.auth != null && get(/databases/$(database)/documents/profiles/$(request.auth.uid)).data.role == 'admin';

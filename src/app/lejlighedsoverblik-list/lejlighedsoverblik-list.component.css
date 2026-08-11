@@ -1,0 +1,72 @@
+.lejlighed-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4em;
+}
+
+.lejlighed-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15em;
+    padding: 0.4em 1em;
+    background: var(--vg-surface);
+    border: 1px solid var(--vg-line);
+    border-radius: var(--vg-radius-md);
+}
+
+.lejlighed-card-header {
+    display: flex;
+    align-items: center;
+    padding-bottom: 0.2em;
+    margin-bottom: 0.1em;
+    border-bottom: 1px solid var(--vg-line);
+}
+
+.lejlighed-nummer {
+    font-family: var(--vg-font-display);
+    font-weight: 600;
+}
+
+.lejlighed-field-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1em;
+    min-height: 1.6em;
+}
+
+.field-label {
+    color: var(--vg-muted);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    flex-shrink: 0;
+}
+
+.field-value {
+    text-align: right;
+}
+
+.lejlighed-field-row input {
+    max-width: 60%;
+    text-align: right;
+    padding: 0.15em 0.5em;
+    line-height: 1.3;
+}
+
+.field-hint {
+    display: block;
+    color: var(--vg-muted);
+    font-size: 0.72rem;
+}
+
+.lejlighed-total {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1em;
+    margin-top: 1em;
+    padding: 0.6em 1em;
+    border-top: 1px solid var(--vg-line);
+    font-weight: 600;
+}

@@ -28,3 +28,23 @@
 .auth-hint {
     color: var(--vg-muted, #9aa0a8);
 }
+
+/* .form-control-lg's 1.25rem font-size clips a native <select>'s text in some browsers
+   (the box doesn't grow to fit it the way it does for a text <input>) - a select needs its
+   own, smaller sizing rather than sharing the large text-input styling. */
+.auth-card select.form-control {
+    font-size: 1rem;
+    line-height: 1.5;
+    height: auto;
+    padding: 0.6rem 1rem;
+}
+
+/* A native <select> has no ::placeholder pseudo-element for its displayed value the way a
+   text <input> does, so the "Vælg din adresse" placeholder option renders in the same ink
+   color as a real selection unless targeted separately. :invalid (paired with the select's
+   own "required" attribute and an empty-value placeholder option) is only true while that
+   placeholder is showing, which is what lets this match .form-control::placeholder's color
+   without also graying out a real selected address. */
+.auth-card select.form-control:invalid {
+    color: var(--vg-muted, #9aa0a8) !important;
+}

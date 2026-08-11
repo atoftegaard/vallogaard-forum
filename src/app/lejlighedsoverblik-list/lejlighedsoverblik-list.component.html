@@ -1,0 +1,94 @@
+<div class="settings-page">
+    <div class="banner">
+        <div class="container">
+          <h1 class="logo-font">Lejlighedsoverblik</h1>
+          <div class="article-meta">
+              <div class="info">
+                  <span class="author"></span>
+                  <span class="date"></span>
+                  <span class="date" style="padding-top: 5px;"></span>
+              </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="page-wrapper">
+        <div class="container page">
+            <div class="col-md-12">
+                <div class="lejlighed-list" [hidden]="loading">
+                    <div class="lejlighed-card" *ngFor="let lejlighed of lejligheder">
+                        <div class="lejlighed-card-header">
+                            <span class="lejlighed-nummer">Lejlighed {{ lejlighed.nummer || '–' }}</span>
+                        </div>
+                        <div class="lejlighed-field-row">
+                            <span class="field-label">Lejlighed (adresse)</span>
+                            <span class="field-value">{{ lejlighed.adresse }}</span>
+                        </div>
+                        <div class="lejlighed-field-row">
+                            <span class="field-label">Beboere</span>
+                            <span class="field-value" *ngIf="!isAdmin">{{ lejlighed.beboere || '–' }}</span>
+                            <ng-container *ngIf="isAdmin">
+                                <span class="field-value" *ngIf="profilesByAddress.get(lejlighed.adresse) as matchedProfiles; else beboereInput">{{ matchedNames(matchedProfiles) }}</span>
+                                <ng-template #beboereInput>
+                                    <input type="text" class="form-control"
+                                        [(ngModel)]="lejlighed.beboere"
+                                        [disabled]="busyId === lejlighed.id"
+                                        (blur)="save(lejlighed)">
+                                </ng-template>
+                            </ng-container>
+                        </div>
+                        <div class="lejlighed-field-row" *ngIf="isAdmin">
+                            <span class="field-label">Telefonnummer</span>
+                            <input type="text" class="form-control"
+                                [(ngModel)]="lejlighed.telefonnummer"
+                                [disabled]="busyId === lejlighed.id"
+                                (blur)="save(lejlighed)">
+                        </div>
+                        <div class="lejlighed-field-row" *ngIf="isAdmin">
+                            <span class="field-label">Email</span>
+                            <span class="field-value" *ngIf="profilesByAddress.get(lejlighed.adresse) as matchedProfiles; else emailInput">
+                                <ng-container *ngFor="let profile of matchedProfiles; let last = last"><a [href]="'mailto:' + profile.email">{{ profile.email }}</a>{{ last ? '' : ', ' }}</ng-container>
+                                <span class="field-hint">(fra brugerprofil)</span>
+                            </span>
+                            <ng-template #emailInput>
+                                <input type="text" class="form-control"
+                                    [(ngModel)]="lejlighed.email"
+                                    [disabled]="busyId === lejlighed.id"
+                                    (blur)="save(lejlighed)">
+                            </ng-template>
+                        </div>
+                        <div class="lejlighed-field-row">
+                            <span class="field-label">Fordelingstal</span>
+                            <span class="field-value" *ngIf="!isAdmin">{{ lejlighed.fordelingstal }}</span>
+                            <input *ngIf="isAdmin" type="number" class="form-control"
+                                [(ngModel)]="lejlighed.fordelingstal"
+                                [disabled]="busyId === lejlighed.id"
+                                (blur)="save(lejlighed)">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lejlighed-total"
+                    [hidden]="!(!loading && !loadError && lejligheder.length > 0)">
+                    <span class="field-label">Fordelingstal i alt</span>
+                    <span class="field-value">{{ fordelingstalTotal }}</span>
+                </div>
+
+                <div class="app-bruger-preview"
+                    [hidden]="!loading">
+                Henter lejligheder...
+                </div>
+
+                <div class="app-bruger-preview"
+                    [hidden]="!loadError">
+                    Kunne ikke hente lejlighederne. Prøv at genindlæse siden.
+                </div>
+
+                <div class="app-bruger-preview"
+                    [hidden]="!(!loading && !loadError && lejligheder.length === 0)">
+                    Der er endnu ikke registreret nogen lejligheder.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

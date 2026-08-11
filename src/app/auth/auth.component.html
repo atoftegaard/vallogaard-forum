@@ -40,11 +40,14 @@
                 </fieldset>
                 <fieldset class="form-group" *ngIf="authType == 'register'">
                   <span>Adresse</span>
-                  <input
+                  <select
                     formControlName="address"
-                    placeholder="Angiv din adresse her"
                     class="form-control form-control-lg"
-                    type="text" />
+                    required
+                    [disabled]="loadingAdresser">
+                    <option value="" disabled selected>{{ loadingAdresser ? 'Henter adresser...' : 'Vælg din adresse' }}</option>
+                    <option *ngFor="let lejlighed of lejlighedAdresser" [value]="lejlighed.adresse">{{ lejlighed.adresse }}</option>
+                  </select>
                 </fieldset>
                 <fieldset class="form-group" *ngIf="authType == 'login'" >
                   <span>Kodeord</span>
