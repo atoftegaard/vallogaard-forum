@@ -4,6 +4,7 @@ import {
   Auth, onAuthStateChanged, signInWithEmailAndPassword, sendPasswordResetEmail, signOut, User,
   setPersistence, browserLocalPersistence, browserSessionPersistence
 } from '@angular/fire/auth';
+import { clearSessionCookie } from '../core/session-cookie';
 import { Profile } from '../core/models/profile.model';
 import { Firestore, doc, docData } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
@@ -65,6 +66,7 @@ export  class  AuthService {
   }
 
   async logout() {
+    clearSessionCookie();
     await signOut(this.auth);
     localStorage.removeItem('user');
     this.router.navigate(['/login']);

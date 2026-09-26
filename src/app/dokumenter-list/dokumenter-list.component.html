@@ -8,7 +8,7 @@
                   <span class="date"></span>
                   <span class="date" style="padding-top: 5px;"></span>
               </div>
-            </div>              
+            </div>
         </div>
     </div>
 
@@ -16,21 +16,33 @@
         <div class="container page">
             <div class="col-md-12">
                 <div class="btn-wrapper" *ngIf="isAdmin">
-                    <app-dokumenter-upload></app-dokumenter-upload>
+                    <app-dokumenter-upload [existingCategories]="categoryNames" (uploaded)="loadDokumenter()"></app-dokumenter-upload>
                 </div>
 
-                <app-dokument-preview
-                    *ngFor="let dokument of dokumenter | async"
-                    [dokument]="dokument">
-                </app-dokument-preview>
+                <details class="category-group" *ngFor="let group of groups; trackBy: trackByCategory">
+                    <summary class="category-header">
+                        <span>{{ group.category }}</span>
+                        <span class="category-count">{{ group.dokumenter.length }}</span>
+                    </summary>
+                    <div class="category-body">
+                        <app-dokument-preview
+                            *ngFor="let dokument of group.dokumenter; trackBy: trackByPath"
+                            [dokument]="dokument"
+                            [isAdmin]="isAdmin"
+                            [existingCategories]="categoryNames"
+                            (categoryChanged)="onCategoryChanged()"
+                            (deleted)="onDokumentDeleted(dokument)">
+                        </app-dokument-preview>
+                    </div>
+                </details>
 
                 <div class="app-dokument-preview"
                     [hidden]="!loading">
                 Henter dokumenter...
                 </div>
-                
+
                 <div class="app-dokument-preview"
-                    [hidden]="!(!loading && (dokumenter | async)?.length === 0)">
+                    [hidden]="!(!loading && groups.length === 0)">
                     Der er endnu ikke lagt nogle dokumenter op.
                 </div>
             </div>

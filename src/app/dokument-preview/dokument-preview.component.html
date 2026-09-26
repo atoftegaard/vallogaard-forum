@@ -1,13 +1,40 @@
-<a [attr.href]="[dokument.ref]" target="_blank" class="preview-link">
-    <div class="article-preview row">
-        <div class="col-md-7" style="padding-right:1em">
-            {{ dokument.title }}
-        </div>
-        <div class="col-md-3" style="padding-right:1em">
-            {{ toLongDate(dokument.uploadedAt) }}
-        </div>
-        <div class="col-md-2">
-            {{ dokument.size | filesize }}
+<div class="article-preview dokument-row">
+    <a [attr.href]="[dokument.ref]" target="_blank" class="preview-link dokument-link">
+        <span class="dokument-title">{{ dokument.title }}</span>
+        <span class="dokument-date">{{ toLongDate(dokument.uploadedAt) }}</span>
+        <span class="dokument-size">{{ dokument.size | filesize }}</span>
+    </a>
+
+    <div class="dokument-category-admin" *ngIf="isAdmin">
+        <ng-container *ngIf="!editingCategory">
+            <button type="button" class="category-edit-btn" *ngIf="!dokument.bestyrelsen" (click)="startEditCategory()" title="Skift kategori">
+                <i class="ion-edit"></i>
+            </button>
+            <button type="button" class="category-edit-btn dokument-delete-btn" (click)="deleteDokument()" [disabled]="deleting" title="Slet dokument">
+                <i class="ion-trash-a"></i>
+            </button>
+        </ng-container>
+
+        <div class="category-edit-form" *ngIf="editingCategory">
+            <select class="form-control category-edit-input"
+                [(ngModel)]="categorySelection"
+                [disabled]="saving">
+                <option value="" disabled>Vælg kategori</option>
+                <option *ngFor="let c of existingCategories" [value]="c">{{ c }}</option>
+                <option [value]="bestyrelsenCategory">{{ bestyrelsenCategory }} (kun administratorer)</option>
+                <option [value]="newCategoryOption">Ny kategori…</option>
+            </select>
+            <input class="form-control category-edit-input"
+                *ngIf="categorySelection === newCategoryOption"
+                type="text"
+                placeholder="Navn på ny kategori"
+                [(ngModel)]="newCategoryName"
+                (keydown.enter)="saveCategory()"
+                [disabled]="saving" />
+            <button type="button" class="btn btn-sm btn-primary" (click)="saveCategory()" [disabled]="saving || !chosenCategory">Gem</button>
+            <button type="button" class="btn btn-sm btn-default" (click)="cancelEditCategory()" [disabled]="saving">Fortryd</button>
         </div>
     </div>
-</a>
+
+    <div class="dokument-category-error" *ngIf="errorMessage">{{ errorMessage }}</div>
+</div>

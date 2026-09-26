@@ -1,9 +1,28 @@
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
-    match /{allPaths=**} {
-      allow read: if request.auth != null
-      allow write: if request.auth != null;
+
+    function isAdmin() {
+      return request.auth != null &&
+        firestore.get(/databases/(default)/documents/profiles/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    match /dokumenter-bestyrelse/{fileId=**} {
+      allow read, write: if isAdmin();
+    }
+
+    // Storage rules grant access if ANY matching block allows it (no "most specific wins"),
+    // so this catch-all has to actively exclude dokumenter-bestyrelse/ itself, or the block
+    // above becomes pointless. Indexing into a user-named wildcard capture (e.g.
+    // {path=**} -> path[0]) looked right but silently breaks for list() requests specifically
+    // (get() was fine) - verified against the emulator, a version using that pattern denied
+    // ALL listing, including the public dokumenter/ folder, which is exactly what broke
+    // production once already. request.path is the built-in path array and indexes
+    // correctly for both. request.path[3] is the first real segment: [0]='b', [1]=bucket,
+    // [2]='o', [3]=the actual top-level folder name.
+    match /{path=**} {
+      allow read: if request.auth != null && request.path[3] != 'dokumenter-bestyrelse';
+      allow write: if request.auth != null && request.path[3] != 'dokumenter-bestyrelse';
     }
   }
 }

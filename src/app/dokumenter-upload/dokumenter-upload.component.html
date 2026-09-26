@@ -23,6 +23,25 @@
                   formControlName="title" />
               </fieldset>
 
+            <fieldset class="form-group" *ngIf="!settingsForm.value.bestyrelsen">
+                <span>Kategori</span>
+                <input class="form-control form-control-lg"
+                  type="text"
+                  list="dokument-categories"
+                  placeholder="Angiv kategori, fx Regnskaber"
+                  formControlName="category" />
+                <datalist id="dokument-categories">
+                  <option *ngFor="let c of existingCategories" [value]="c"></option>
+                </datalist>
+              </fieldset>
+
+            <fieldset class="form-group">
+                <label class="bestyrelsen-toggle">
+                  <input type="checkbox" formControlName="bestyrelsen" />
+                  Kun for bestyrelsen
+                </label>
+              </fieldset>
+
             <button class="btn btn-lg btn-default pull-xs-left" type="button"
                 (click)="uploadNew=false" *ngIf="uploadNew">
                 Fortryd

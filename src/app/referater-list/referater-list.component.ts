@@ -3,6 +3,8 @@ import { Firestore, collection, collectionData, query, orderBy } from '@angular/
 import { Router } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 import { Referat } from '../core/models/referat.model';
 
 @Component({
@@ -40,7 +42,13 @@ export class ReferaterListComponent implements OnInit {
     }
 
     const q = query(collection(this.firestore, 'referater'), orderBy('from', 'desc'));
-    this.referater = collectionData(q) as Observable<Referat[]>;
+    // Linked via vallogaard.dk/dokument/referat/<id> (the dokument function looks the file up
+    // through the referat document) rather than the stored firebasestorage.googleapis.com
+    // URL. `ng serve` has no Hosting rewrite, so locally the live site's full address is used.
+    const base = environment.production ? '' : 'https://vallogaard.dk';
+    this.referater = (collectionData(q, { idField: 'id' }) as Observable<Referat[]>).pipe(
+      map(referater => referater.map(r => ({ ...r, ref: base + '/dokument/referat/' + r.id })))
+    );
     this.referater.subscribe(x => {
       this.loading = false;
     });

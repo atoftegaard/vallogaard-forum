@@ -10,3 +10,4 @@ export { applyForUser } from './apply-for-user';
 export { notifyNewArticle, notifyWatchers } from './article-notifications';
 export { backfillLejlighedDetails } from './backfill-lejlighed-details';
 export { listLejlighedAdresser } from './list-lejlighed-adresser';
+export { dokument } from './dokument-download';
