@@ -1,0 +1,7 @@
+.bestyrelsen-toggle {
+    display: flex;
+    align-items: center;
+    gap: .5em;
+    font-weight: normal;
+    margin-bottom: 0;
+}

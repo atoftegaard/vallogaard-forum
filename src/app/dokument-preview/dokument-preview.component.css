@@ -1,3 +1,80 @@
-.article-preview {
-  margin-bottom: 1rem;
+.article-preview.dokument-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1em;
+}
+
+.dokument-link {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.dokument-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dokument-date,
+.dokument-size {
+  flex: none;
+  color: var(--vg-muted);
+  font-size: .85rem;
+  white-space: nowrap;
+}
+
+.dokument-size {
+  min-width: 4.5em;
+  text-align: right;
+}
+
+.dokument-category-admin {
+  display: flex;
+  align-items: center;
+  gap: .4em;
+  flex: none;
+}
+
+.category-edit-btn {
+  background: none;
+  border: none;
+  color: var(--vg-muted);
+  cursor: pointer;
+  padding: .2em;
+  font-size: .95rem;
+  line-height: 1;
+}
+
+.category-edit-btn:hover {
+  color: var(--vg-accent);
+}
+
+.dokument-delete-btn:hover:not(:disabled) {
+  color: #e2897a;
+}
+
+.category-edit-form {
+  display: flex;
+  align-items: center;
+  gap: .4em;
+}
+
+.category-edit-input {
+  width: 11em;
+  height: auto;
+  padding: .3em .6em;
+  font-size: .85rem;
+}
+
+.dokument-category-error {
+  flex-basis: 100%;
+  font-size: .8rem;
+  color: #e2897a;
 }

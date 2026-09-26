@@ -2,3 +2,61 @@
     margin-bottom: 2em;
     margin-left: -1em;
 }
+
+.category-group {
+    background: var(--vg-surface);
+    border: 1px solid var(--vg-line);
+    border-radius: var(--vg-radius-md);
+    margin-bottom: .75em;
+    overflow: hidden;
+}
+
+.category-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75em;
+    padding: .9em 1.1em;
+    cursor: pointer;
+    font-family: var(--vg-font-display);
+    font-weight: 700;
+    color: var(--vg-ink);
+    list-style: none;
+}
+
+.category-header::-webkit-details-marker {
+    display: none;
+}
+
+.category-header::before {
+    content: '▸';
+    color: var(--vg-accent);
+    margin-right: .6em;
+    display: inline-block;
+    transition: transform .15s ease;
+}
+
+.category-group[open] .category-header::before {
+    transform: rotate(90deg);
+}
+
+.category-count {
+    font-size: .78rem;
+    font-weight: 400;
+    color: var(--vg-muted);
+    background: var(--vg-surface-2);
+    border-radius: 20px;
+    padding: .15em .7em;
+}
+
+.category-body {
+    padding: 0 1.1em 1em;
+}
+
+.category-body .article-preview {
+    margin-bottom: .6em;
+}
+
+.category-body .article-preview:last-child {
+    margin-bottom: 0;
+}
