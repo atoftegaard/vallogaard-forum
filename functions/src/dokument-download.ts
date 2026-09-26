@@ -1,7 +1,10 @@
 import { onRequest } from 'firebase-functions/v2/https';
 import { getStorage } from 'firebase-admin/storage';
 import { auth, db } from './firebase-admin';
-import { buildContentDisposition, extensionForContentType, extensionOf } from '../../shared/dokument-download-name';
+import {
+    buildContentDisposition, extensionForContentType, extensionOf,
+    INLINE_TYPES_BY_EXTENSION, isOleContainer, sniffExtension, sniffOleExtension
+} from '../../shared/dokument-download-name';
 
 // Serves documents under vallogaard.dk/dokument/... (Hosting rewrite in firebase.json)
 // instead of the firebasestorage.googleapis.com token links, so the address people see and
@@ -67,6 +70,28 @@ async function referatFile(referatId: string): Promise<{ objectName: string; tit
         return null;
     }
     return DOKUMENT_ID.test(objectName) ? { objectName, title: String(data?.title || '') } : null;
+}
+
+async function readBytes(file: any, start: number, end: number): Promise<Uint8Array> {
+    const chunks: Buffer[] = [];
+    for await (const chunk of file.createReadStream({ start, end })) {
+        chunks.push(chunk as Buffer);
+    }
+    return Buffer.concat(chunks);
+}
+
+async function sniffFileExtension(file: any, size: number): Promise<string> {
+    try {
+        const head = await readBytes(file, 0, Math.min(size, 8192) - 1);
+        const extension = sniffExtension(head);
+        if (extension || !isOleContainer(head)) {
+            return extension;
+        }
+        return sniffOleExtension(await readBytes(file, 0, Math.min(size, 1024 * 1024) - 1));
+    } catch (error) {
+        console.error('dokument: kunne ikke aflæse filtype', error);
+        return '';
+    }
 }
 
 export const dokument = onRequest({
@@ -138,20 +163,30 @@ export const dokument = onRequest({
     }
 
     const size = Number(metadata.size);
-    const storedType = String(metadata.contentType || '').split(';')[0].trim().toLowerCase();
-    const inlineSafe = INLINE_SAFE_TYPES.includes(storedType);
+    let storedType = String(metadata.contentType || '').split(';')[0].trim().toLowerCase();
 
     // The download name is built here from the title on every request rather than trusting
-    // the contentDisposition stored on the object - older uploads never got one (or got none
-    // for file types the backfill doesn't know), and without a filename the browser falls
-    // back to the GUID in the URL. The extension is the original one when a stored name has
-    // it, otherwise derived from the content type.
+    // the contentDisposition stored on the object - older uploads never got one, and without a
+    // filename the browser falls back to the GUID in the URL. The extension is the original one
+    // when a stored name has it, then whatever the content type says, and for the many older
+    // files whose content type is missing or generic (empty, application/octet-stream) it is
+    // worked out from the file's own first bytes.
     const title = (titleFromReferat || String(metadata.metadata?.title || '')).trim();
     let storedDisposition = String(metadata.contentDisposition || '');
     if (title) {
         const storedName = /filename="([^"]*)"/i.exec(storedDisposition)?.[1] || '';
-        storedDisposition = buildContentDisposition(title, extensionOf(storedName) || extensionForContentType(storedType));
+        let extension = extensionOf(storedName) || extensionForContentType(storedType);
+        if (!extension && size > 0) {
+            extension = await sniffFileExtension(file, size);
+            // A file that is verifiably a PDF/image can be shown in the tab even if it was
+            // stored with a useless content type.
+            if (INLINE_TYPES_BY_EXTENSION[extension] && !INLINE_SAFE_TYPES.includes(storedType)) {
+                storedType = INLINE_TYPES_BY_EXTENSION[extension];
+            }
+        }
+        storedDisposition = buildContentDisposition(title, extension);
     }
+    const inlineSafe = INLINE_SAFE_TYPES.includes(storedType);
 
     res.set({
         'Content-Type': inlineSafe ? storedType : 'application/octet-stream',
