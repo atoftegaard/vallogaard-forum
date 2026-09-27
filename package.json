@@ -21,7 +21,7 @@
     "@angular/cdk": "20.0.3",
     "@angular/cli": "20.3.27",
     "@angular/common": "20.3.27",
-    "@angular/compiler": "20.3.27",
+    "@angular/compiler": "20.3.28",
     "@angular/core": "20.3.27",
     "@angular/fire": "20.0.1",
     "@angular/forms": "20.3.27",
