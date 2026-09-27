@@ -1,3 +1,83 @@
 nav {
     background-color: var(--vg-surface);
+    position: relative;
+}
+
+.navbar .container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+/* Hamburger toggle - hidden on desktop, where the menu is always shown inline. */
+.menu-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: none;
+    border-radius: var(--vg-radius-sm);
+    background: transparent;
+    cursor: pointer;
+}
+
+.menu-toggle span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    margin: 0 auto;
+    background: var(--vg-ink);
+    border-radius: 2px;
+    transition: transform .2s ease, opacity .2s ease;
+}
+
+.menu-toggle.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.menu-toggle.open span:nth-child(2) { opacity: 0; }
+.menu-toggle.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+@media (max-width: 768px) {
+    .navbar .container {
+        justify-content: space-between;
+    }
+
+    .menu-toggle {
+        display: flex;
+    }
+
+    /* Collapsed by default; opens as a stacked panel under the bar instead of the
+       old flex-wrap row of links that ran together and was hard to tap. */
+    ul.nav.navbar-nav {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        margin: 0;
+        padding: .5rem 0;
+        background: var(--vg-surface);
+        border-bottom: 1px solid var(--vg-line);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, .25);
+        z-index: 20;
+    }
+
+    ul.nav.navbar-nav.open {
+        display: flex;
+    }
+
+    ul.nav.navbar-nav .nav-item {
+        width: 100%;
+    }
+
+    ul.nav.navbar-nav .nav-link {
+        display: block;
+        padding: .75rem 1.25rem;
+    }
+
+    ul.nav.navbar-nav .nav-item + .nav-item {
+        border-top: 1px solid var(--vg-line);
+    }
 }

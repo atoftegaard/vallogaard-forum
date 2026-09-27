@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router, NavigationStart } from '@angular/router';
 import { Profile, UserService } from '../../core';
 import { AuthService } from '../../auth/auth.service';
 
@@ -11,11 +12,13 @@ import { AuthService } from '../../auth/auth.service';
 export class HeaderComponent implements OnInit {
   constructor(
     private userService: UserService,
-    public authService: AuthService
+    public authService: AuthService,
+    private router: Router
   ) {}
 
   currentUser: Profile;
   isAdmin: boolean;
+  menuOpen = false;
 
   ngOnInit() {
     this.userService.currentUser.subscribe(
@@ -27,5 +30,17 @@ export class HeaderComponent implements OnInit {
     this.authService.isAdmin.then((isAdmin) => {
       this.isAdmin = isAdmin;
     });
+
+    // Closes the mobile menu when a link is followed, so it doesn't stay open over the
+    // page it just navigated to (also covers "Log ud", which navigates to "/").
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationStart) {
+        this.menuOpen = false;
+      }
+    });
+  }
+
+  toggleMenu() {
+    this.menuOpen = !this.menuOpen;
   }
 }
