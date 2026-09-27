@@ -3,8 +3,18 @@
   <div class="container">
     <!-- <a class="navbar-brand" routerLink="/">Valløgård Forum</a> -->
 
+    <button type="button"
+      class="menu-toggle"
+      [class.open]="menuOpen"
+      (click)="toggleMenu()"
+      [attr.aria-expanded]="menuOpen"
+      aria-controls="main-nav"
+      aria-label="Vis/skjul menu">
+      <span></span><span></span><span></span>
+    </button>
+
     <!-- Show this for logged in users -->
-    <ul class="nav navbar-nav pull-xs-right">
+    <ul class="nav navbar-nav pull-xs-right" id="main-nav" [class.open]="menuOpen" (click)="menuOpen = false">
 
       <li class="nav-item">
         <a class="nav-link"
