@@ -40,7 +40,7 @@
     "ngx-cookieconsent": "^8.0.0",
     "ngx-filesize": "^3.0.7",
     "ngx-typed-router": "^1.2.0",
-    "nodemailer": "^9.0.3",
+    "nodemailer": "^10.0.9",
     "primeicons": "^8.0.0",
     "primeng": "^20.0.0",
     "quill": "^2.0.3",
